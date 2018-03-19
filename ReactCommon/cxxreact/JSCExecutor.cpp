@@ -219,8 +219,8 @@ namespace facebook {
           return isNetworkInspected(ownerId, appId, deviceId);
         };
 
-        auto& globalInspector = facebook::react::getInspectorInstance();
-        JSC_JSGlobalContextEnableDebugger(m_context, globalInspector, ownerId.c_str(), checkIsInspectedRemote);
+        //auto& globalInspector = facebook::react::getInspectorInstance();
+        //JSC_JSGlobalContextEnableDebugger(m_context, globalInspector, ownerId.c_str(), checkIsInspectedRemote);
       }
 
       installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>("nativeFlushQueueImmediate");
@@ -341,8 +341,8 @@ namespace facebook {
       m_nativeModules.reset();
 
       if (canUseInspector(context)) {
-        auto &globalInspector = facebook::react::getInspectorInstance();
-        JSC_JSGlobalContextDisableDebugger(context, globalInspector);
+        //auto &globalInspector = facebook::react::getInspectorInstance();
+        //JSC_JSGlobalContextDisableDebugger(context, globalInspector);
       }
 
       JSC_JSGlobalContextRelease(context);

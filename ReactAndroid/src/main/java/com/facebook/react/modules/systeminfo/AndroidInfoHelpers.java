@@ -49,7 +49,7 @@ public class AndroidInfoHelpers {
     if (isRunningOnGenymotion()) {
       ipAddress = GENYMOTION_LOCALHOST;
     } else if (isRunningOnStockEmulator()) {
-      ipAddress = EMULATOR_LOCALHOST;
+      ipAddress = DEVICE_LOCALHOST;
     } else {
       ipAddress = DEVICE_LOCALHOST;
     }

@@ -11,14 +11,15 @@ static JSValueRef pokeSamplingProfiler(
     size_t argumentCount,
     const JSValueRef arguments[],
     JSValueRef* exception) {
-  return JSC_JSPokeSamplingProfiler(ctx);
+  //return JSC_JSPokeSamplingProfiler(ctx);
+  return nullptr;
 }
 
 namespace facebook {
 namespace react {
 
 void initSamplingProfilerOnMainJSCThread(JSGlobalContextRef ctx) {
-  JSC_JSStartSamplingProfilingOnMainJSCThread(ctx);
+  //JSC_JSStartSamplingProfilingOnMainJSCThread(ctx);
 
   // Allow the profiler to be poked from JS as well
   // (see SamplingProfiler.js for an example of how it could be used with the JSCSamplingProfiler module).

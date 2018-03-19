@@ -11,12 +11,17 @@ import java.util.HashSet;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.SparseIntArray;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.common.util.ByteConstants;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.listener.RequestListener;
+import com.facebook.imagepipeline.memory.PoolConfig;
+import com.facebook.imagepipeline.memory.PoolFactory;
+import com.facebook.imagepipeline.memory.PoolParams;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -156,10 +161,18 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     ForwardingCookieHandler handler = new ForwardingCookieHandler(context);
     container.setCookieJar(new JavaNetCookieJar(handler));
 
+    long maxMem = Runtime.getRuntime().maxMemory();
     return OkHttpImagePipelineConfigFactory
       .newBuilder(context.getApplicationContext(), client)
       .setNetworkFetcher(new ReactOkHttpNetworkFetcher(client))
       .setDownsampleEnabled(false)
+      .setPoolFactory(new PoolFactory(PoolConfig.newBuilder()
+        .setBitmapPoolParams(new PoolParams(
+          0,
+          368* ByteConstants.MB,
+          new SparseIntArray(0)
+        ))
+        .build()))
       .setRequestListeners(requestListeners);
   }
 

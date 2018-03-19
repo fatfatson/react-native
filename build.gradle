@@ -24,4 +24,6 @@ allprojects {
             url "$androidSdk/extras/m2repository/"
         }
     }
+
+    buildDir = "e:/build-1/${project.name}"
 }
