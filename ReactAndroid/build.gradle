@@ -200,7 +200,7 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
     inputs.file('src/main/jni/react')
     outputs.dir("$buildDir/react-ndk/all")
     commandLine getNdkBuildFullPath(),
-            'NDK_DEBUG=1',
+            //'NDK_DEBUG=1',
             'NDK_PROJECT_PATH=null',
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             'NDK_OUT=' + temporaryDir,
@@ -234,7 +234,7 @@ task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    //buildToolsVersion "23.0.1"
 
     defaultConfig {
         minSdkVersion 16

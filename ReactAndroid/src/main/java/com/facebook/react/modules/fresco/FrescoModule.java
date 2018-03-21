@@ -166,13 +166,7 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
       .newBuilder(context.getApplicationContext(), client)
       .setNetworkFetcher(new ReactOkHttpNetworkFetcher(client))
       .setDownsampleEnabled(false)
-      .setPoolFactory(new PoolFactory(PoolConfig.newBuilder()
-        .setBitmapPoolParams(new PoolParams(
-          0,
-          368* ByteConstants.MB,
-          new SparseIntArray(0)
-        ))
-        .build()))
+
       .setRequestListeners(requestListeners);
   }
 
