@@ -24,6 +24,7 @@ using SharedShadowNode = std::shared_ptr<const ShadowNode>;
 using SharedShadowNodeList = std::vector<std::shared_ptr<const ShadowNode>>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
+using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 
 class ShadowNode:
   public virtual Sealable,
@@ -55,6 +56,8 @@ public:
   SharedShadowNodeSharedList getChildren() const;
   SharedProps getProps() const;
   Tag getTag() const;
+  Tag getRootTag() const;
+  InstanceHandle getInstanceHandle() const;
   SharedShadowNode getSourceNode() const;
   void sealRecursive() const;
 
@@ -77,7 +80,8 @@ protected:
   InstanceHandle instanceHandle_;
   SharedProps props_;
   SharedShadowNodeSharedList children_;
-  SharedShadowNode sourceNode_;
+  WeakShadowNode sourceNode_;
+  int revision_;
 };
 
 } // namespace react

@@ -5,19 +5,17 @@ APPLE_COMPILER_FLAGS = []
 
 if not IS_OSS_BUILD:
     load("@xplat//configurations/buck/apple:flag_defs.bzl", "get_static_library_ios_flags", "flags")
-    APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), 'compiler_flags')
+    APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), "compiler_flags")
 
 rn_xplat_cxx_library(
     name = "debug",
     srcs = glob(
-        [
-            "**/*.cpp",
-        ],
+        ["**/*.cpp"],
+        excludes = glob(["tests/**/*.cpp"]),
     ),
     headers = glob(
-        [
-            "**/*.h",
-        ],
+        ["**/*.h"],
+        excludes = glob(["tests/**/*.h"]),
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
@@ -27,10 +25,10 @@ rn_xplat_cxx_library(
         prefix = "fabric/debug",
     ),
     compiler_flags = [
-        "-std=c++14",
-        "-Wall",
         "-fexceptions",
         "-frtti",
+        "-std=c++14",
+        "-Wall",
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + APPLE_INSPECTOR_FLAGS,
@@ -39,8 +37,33 @@ rn_xplat_cxx_library(
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
     ],
+    tests = [
+        ":tests",
+    ],
     visibility = ["PUBLIC"],
     deps = [
         "xplat//folly:headers_only",
     ],
 )
+
+if not IS_OSS_BUILD:
+    load("@xplat//configurations/buck:default_platform_defs.bzl", "APPLE")
+
+    cxx_test(
+        name = "tests",
+        srcs = glob(["tests/**/*.cpp"]),
+        headers = glob(["tests/**/*.h"]),
+        contacts = ["oncall+react_native@xmail.facebook.com"],
+        compiler_flags = [
+            "-fexceptions",
+            "-frtti",
+            "-std=c++14",
+            "-Wall",
+        ],
+        platforms = APPLE,
+        deps = [
+            "xplat//folly:molly",
+            "xplat//third-party/gmock:gtest",
+            ":debug",
+        ],
+    )
