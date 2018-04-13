@@ -11,9 +11,7 @@
 
 'use strict';
 
-import AnimatedNode from 'AnimatedNode';
-
-export opaque type ____StyleSheetInternalStyleIdentifier_Internal: number = number;
+const AnimatedNode = require('AnimatedNode');
 
 export type ColorValue = null | string;
 export type DimensionValue = null | number | string | AnimatedNode;
@@ -224,8 +222,6 @@ type GenericStyleProp<+T> =
   | null
   | void
   | T
-  | ____StyleSheetInternalStyleIdentifier_Internal
-  | number
   | false
   | ''
   | $ReadOnlyArray<GenericStyleProp<T>>;

@@ -19,6 +19,7 @@ require("InitializeCore");
 var invariant = require("fbjs/lib/invariant");
 var warning = require("fbjs/lib/warning");
 var emptyFunction = require("fbjs/lib/emptyFunction");
+var ReactNativeViewConfigRegistry = require("ReactNativeViewConfigRegistry");
 var UIManager = require("UIManager");
 var TextInputState = require("TextInputState");
 var deepDiffer = require("deepDiffer");
@@ -509,11 +510,13 @@ var injection$1 = {
     getNodeFromInstance = Injected.getNodeFromInstance;
 
     {
-      warning(
-        getNodeFromInstance && getInstanceFromNode,
-        "EventPluginUtils.injection.injectComponentTree(...): Injected " +
-          "module is missing getNodeFromInstance or getInstanceFromNode."
-      );
+      !(getNodeFromInstance && getInstanceFromNode)
+        ? warning(
+            false,
+            "EventPluginUtils.injection.injectComponentTree(...): Injected " +
+              "module is missing getNodeFromInstance or getInstanceFromNode."
+          )
+        : void 0;
     }
   }
 };
@@ -549,10 +552,9 @@ var validateEventDispatches = void 0;
       ? dispatchInstances.length
       : dispatchInstances ? 1 : 0;
 
-    warning(
-      instancesIsArr === listenersIsArr && instancesLen === listenersLen,
-      "EventPluginUtils: Invalid `event`."
-    );
+    !(instancesIsArr === listenersIsArr && instancesLen === listenersLen)
+      ? warning(false, "EventPluginUtils: Invalid `event`.")
+      : void 0;
   };
 }
 
@@ -939,7 +941,7 @@ function listenerAtPhase(inst, event, propagationPhase) {
  */
 function accumulateDirectionalDispatches(inst, phase, event) {
   {
-    warning(inst, "Dispatching inst must not be null");
+    !inst ? warning(false, "Dispatching inst must not be null") : void 0;
   }
   var listener = listenerAtPhase(inst, event, phase);
   if (listener) {
@@ -1258,13 +1260,15 @@ SyntheticEvent.extend = function(Interface) {
               !target.constructor.Interface.hasOwnProperty(prop) &&
               shouldBeReleasedProperties.indexOf(prop) === -1
             ) {
-              warning(
-                didWarnForAddedNewProperty || target.isPersistent(),
-                "This synthetic event is reused for performance reasons. If you're " +
-                  "seeing this, you're adding a new property in the synthetic event object. " +
-                  "The property is never released. See " +
-                  "https://fb.me/react-event-pooling for more information."
-              );
+              !(didWarnForAddedNewProperty || target.isPersistent())
+                ? warning(
+                    false,
+                    "This synthetic event is reused for performance reasons. If you're " +
+                      "seeing this, you're adding a new property in the synthetic event object. " +
+                      "The property is never released. See " +
+                      "https://fb.me/react-event-pooling for more information."
+                  )
+                : void 0;
               didWarnForAddedNewProperty = true;
             }
             target[prop] = value;
@@ -1291,7 +1295,7 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
   return {
     configurable: true,
     set: set,
-    get: get
+    get: get$$1
   };
 
   function set(val) {
@@ -1300,7 +1304,7 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
     return val;
   }
 
-  function get() {
+  function get$$1() {
     var action = isFunction ? "accessing the method" : "accessing the property";
     var result = isFunction
       ? "This is a no-op function"
@@ -1311,16 +1315,18 @@ function getPooledWarningPropertyDefinition(propName, getVal) {
 
   function warn(action, result) {
     var warningCondition = false;
-    warning(
-      warningCondition,
-      "This synthetic event is reused for performance reasons. If you're seeing this, " +
-        "you're %s `%s` on a released/nullified synthetic event. %s. " +
-        "If you must keep the original synthetic event around, use event.persist(). " +
-        "See https://fb.me/react-event-pooling for more information.",
-      action,
-      propName,
-      result
-    );
+    !warningCondition
+      ? warning(
+          false,
+          "This synthetic event is reused for performance reasons. If you're seeing this, " +
+            "you're %s `%s` on a released/nullified synthetic event. %s. " +
+            "If you must keep the original synthetic event around, use event.persist(). " +
+            "See https://fb.me/react-event-pooling for more information.",
+          action,
+          propName,
+          result
+        )
+      : void 0;
   }
 }
 
@@ -1438,13 +1444,15 @@ function getTouchIdentifier(_ref) {
 
   invariant(identifier != null, "Touch object is missing identifier.");
   {
-    warning(
-      identifier <= MAX_TOUCH_BANK,
-      "Touch identifier %s is greater than maximum supported %s which causes " +
-        "performance issues backfilling array locations for all of the indices.",
-      identifier,
-      MAX_TOUCH_BANK
-    );
+    !(identifier <= MAX_TOUCH_BANK)
+      ? warning(
+          false,
+          "Touch identifier %s is greater than maximum supported %s which causes " +
+            "performance issues backfilling array locations for all of the indices.",
+          identifier,
+          MAX_TOUCH_BANK
+        )
+      : void 0;
   }
   return identifier;
 }
@@ -1543,10 +1551,9 @@ var ResponderTouchHistoryStore = {
         }
         {
           var activeRecord = touchBank[touchHistory.indexOfSingleActiveTouch];
-          warning(
-            activeRecord != null && activeRecord.touchActive,
-            "Cannot find single active touch."
-          );
+          !(activeRecord != null && activeRecord.touchActive)
+            ? warning(false, "Cannot find single active touch.")
+            : void 0;
         }
       }
     }
@@ -1614,7 +1621,7 @@ var changeResponder = function(nextResponderInst, blockHostResponder) {
   }
 };
 
-var eventTypes = {
+var eventTypes$1 = {
   /**
    * On a `touchStart`/`mouseDown`, is it desired that this element become the
    * responder?
@@ -1879,12 +1886,12 @@ function setResponderAndExtractTransfer(
   nativeEventTarget
 ) {
   var shouldSetEventType = isStartish(topLevelType)
-    ? eventTypes.startShouldSetResponder
+    ? eventTypes$1.startShouldSetResponder
     : isMoveish(topLevelType)
-      ? eventTypes.moveShouldSetResponder
+      ? eventTypes$1.moveShouldSetResponder
       : topLevelType === "topSelectionChange"
-        ? eventTypes.selectionChangeShouldSetResponder
-        : eventTypes.scrollShouldSetResponder;
+        ? eventTypes$1.selectionChangeShouldSetResponder
+        : eventTypes$1.scrollShouldSetResponder;
 
   // TODO: stop one short of the current responder.
   var bubbleShouldSetFrom = !responderInst
@@ -1918,7 +1925,7 @@ function setResponderAndExtractTransfer(
   }
   var extracted = void 0;
   var grantEvent = ResponderSyntheticEvent.getPooled(
-    eventTypes.responderGrant,
+    eventTypes$1.responderGrant,
     wantsResponderInst,
     nativeEvent,
     nativeEventTarget
@@ -1929,7 +1936,7 @@ function setResponderAndExtractTransfer(
   var blockHostResponder = executeDirectDispatch(grantEvent) === true;
   if (responderInst) {
     var terminationRequestEvent = ResponderSyntheticEvent.getPooled(
-      eventTypes.responderTerminationRequest,
+      eventTypes$1.responderTerminationRequest,
       responderInst,
       nativeEvent,
       nativeEventTarget
@@ -1946,7 +1953,7 @@ function setResponderAndExtractTransfer(
 
     if (shouldSwitch) {
       var terminateEvent = ResponderSyntheticEvent.getPooled(
-        eventTypes.responderTerminate,
+        eventTypes$1.responderTerminate,
         responderInst,
         nativeEvent,
         nativeEventTarget
@@ -1957,7 +1964,7 @@ function setResponderAndExtractTransfer(
       changeResponder(wantsResponderInst, blockHostResponder);
     } else {
       var rejectEvent = ResponderSyntheticEvent.getPooled(
-        eventTypes.responderReject,
+        eventTypes$1.responderReject,
         wantsResponderInst,
         nativeEvent,
         nativeEventTarget
@@ -2026,7 +2033,7 @@ var ResponderEventPlugin = {
     return responderInst;
   },
 
-  eventTypes: eventTypes,
+  eventTypes: eventTypes$1,
 
   /**
    * We must be resilient to `targetInst` being `null` on `touchMove` or
@@ -2076,10 +2083,10 @@ var ResponderEventPlugin = {
     var isResponderTouchMove = responderInst && isMoveish(topLevelType);
     var isResponderTouchEnd = responderInst && isEndish(topLevelType);
     var incrementalTouch = isResponderTouchStart
-      ? eventTypes.responderStart
+      ? eventTypes$1.responderStart
       : isResponderTouchMove
-        ? eventTypes.responderMove
-        : isResponderTouchEnd ? eventTypes.responderEnd : null;
+        ? eventTypes$1.responderMove
+        : isResponderTouchEnd ? eventTypes$1.responderEnd : null;
 
     if (incrementalTouch) {
       var gesture = ResponderSyntheticEvent.getPooled(
@@ -2101,8 +2108,8 @@ var ResponderEventPlugin = {
       isEndish(topLevelType) &&
       noResponderTouches(nativeEvent);
     var finalTouch = isResponderTerminate
-      ? eventTypes.responderTerminate
-      : isResponderRelease ? eventTypes.responderRelease : null;
+      ? eventTypes$1.responderTerminate
+      : isResponderRelease ? eventTypes$1.responderRelease : null;
     if (finalTouch) {
       var finalEvent = ResponderSyntheticEvent.getPooled(
         finalTouch,
@@ -2154,11 +2161,14 @@ var ResponderEventPlugin = {
   }
 };
 
-var customBubblingEventTypes = {};
-var customDirectEventTypes = {};
+var customBubblingEventTypes$1 =
+  ReactNativeViewConfigRegistry.customBubblingEventTypes;
+var customDirectEventTypes$1 =
+  ReactNativeViewConfigRegistry.customDirectEventTypes;
+var eventTypes$2 = ReactNativeViewConfigRegistry.eventTypes;
 
 var ReactNativeBridgeEventPlugin = {
-  eventTypes: {},
+  eventTypes: eventTypes$2,
 
   /**
    * @see {EventPluginHub.extractEvents}
@@ -2173,8 +2183,8 @@ var ReactNativeBridgeEventPlugin = {
       // Probably a node belonging to another renderer's tree.
       return null;
     }
-    var bubbleDispatchConfig = customBubblingEventTypes[topLevelType];
-    var directDispatchConfig = customDirectEventTypes[topLevelType];
+    var bubbleDispatchConfig = customBubblingEventTypes$1[topLevelType];
+    var directDispatchConfig = customDirectEventTypes$1[topLevelType];
     invariant(
       bubbleDispatchConfig || directDispatchConfig,
       'Unsupported top level event type "%s" dispatched',
@@ -2194,45 +2204,6 @@ var ReactNativeBridgeEventPlugin = {
       return null;
     }
     return event;
-  },
-
-  processEventTypes: function(viewConfig) {
-    var bubblingEventTypes = viewConfig.bubblingEventTypes,
-      directEventTypes = viewConfig.directEventTypes;
-
-    {
-      if (bubblingEventTypes != null && directEventTypes != null) {
-        for (var topLevelType in directEventTypes) {
-          invariant(
-            bubblingEventTypes[topLevelType] == null,
-            "Event cannot be both direct and bubbling: %s",
-            topLevelType
-          );
-        }
-      }
-    }
-
-    if (bubblingEventTypes != null) {
-      for (var _topLevelType in bubblingEventTypes) {
-        if (customBubblingEventTypes[_topLevelType] == null) {
-          ReactNativeBridgeEventPlugin.eventTypes[
-            _topLevelType
-          ] = customBubblingEventTypes[_topLevelType] =
-            bubblingEventTypes[_topLevelType];
-        }
-      }
-    }
-
-    if (directEventTypes != null) {
-      for (var _topLevelType2 in directEventTypes) {
-        if (customDirectEventTypes[_topLevelType2] == null) {
-          ReactNativeBridgeEventPlugin.eventTypes[
-            _topLevelType2
-          ] = customDirectEventTypes[_topLevelType2] =
-            directEventTypes[_topLevelType2];
-        }
-      }
-    }
   }
 };
 
@@ -2396,56 +2367,6 @@ function createPortal(
   };
 }
 
-// Use to restore controlled state after a change event has fired.
-
-var fiberHostComponent = null;
-
-var restoreTarget = null;
-var restoreQueue = null;
-
-function restoreStateOfTarget(target) {
-  // We perform this translation at the end of the event loop so that we
-  // always receive the correct fiber here
-  var internalInstance = getInstanceFromNode(target);
-  if (!internalInstance) {
-    // Unmounted
-    return;
-  }
-  invariant(
-    fiberHostComponent &&
-      typeof fiberHostComponent.restoreControlledState === "function",
-    "Fiber needs to be injected to handle a fiber target for controlled " +
-      "events. This error is likely caused by a bug in React. Please file an issue."
-  );
-  var props = getFiberCurrentPropsFromNode(internalInstance.stateNode);
-  fiberHostComponent.restoreControlledState(
-    internalInstance.stateNode,
-    internalInstance.type,
-    props
-  );
-}
-
-function needsStateRestore() {
-  return restoreTarget !== null || restoreQueue !== null;
-}
-
-function restoreStateIfNeeded() {
-  if (!restoreTarget) {
-    return;
-  }
-  var target = restoreTarget;
-  var queuedTargets = restoreQueue;
-  restoreTarget = null;
-  restoreQueue = null;
-
-  restoreStateOfTarget(target);
-  if (queuedTargets) {
-    for (var i = 0; i < queuedTargets.length; i++) {
-      restoreStateOfTarget(queuedTargets[i]);
-    }
-  }
-}
-
 // Used as a way to call batchedUpdates when we don't have a reference to
 // the renderer. Such as when we're dispatching events or if third party
 // libraries need to call batchedUpdates. Eventually, this API will go away when
@@ -2461,33 +2382,6 @@ var _interactiveUpdates = function(fn, a, b) {
 };
 var _flushInteractiveUpdates = function() {};
 
-var isBatching = false;
-function batchedUpdates(fn, bookkeeping) {
-  if (isBatching) {
-    // If we are currently inside another batch, we need to wait until it
-    // fully completes before restoring state.
-    return fn(bookkeeping);
-  }
-  isBatching = true;
-  try {
-    return _batchedUpdates(fn, bookkeeping);
-  } finally {
-    // Here we wait until all updates have propagated, which is important
-    // when using controlled components within layers:
-    // https://github.com/facebook/react/issues/1698
-    // Then we restore state of any controlled component.
-    isBatching = false;
-    var controlledComponentsHavePendingUpdates = needsStateRestore();
-    if (controlledComponentsHavePendingUpdates) {
-      // If a controlled event was fired, we may need to restore the state of
-      // the DOM node back to the controlled value. This is necessary when React
-      // bails out of the update without touching the DOM.
-      _flushInteractiveUpdates();
-      restoreStateIfNeeded();
-    }
-  }
-}
-
 var injection$2 = {
   injectRenderer: function(renderer) {
     _batchedUpdates = renderer.batchedUpdates;
@@ -2496,194 +2390,9 @@ var injection$2 = {
   }
 };
 
-var TouchHistoryMath = {
-  /**
-   * This code is optimized and not intended to look beautiful. This allows
-   * computing of touch centroids that have moved after `touchesChangedAfter`
-   * timeStamp. You can compute the current centroid involving all touches
-   * moves after `touchesChangedAfter`, or you can compute the previous
-   * centroid of all touches that were moved after `touchesChangedAfter`.
-   *
-   * @param {TouchHistoryMath} touchHistory Standard Responder touch track
-   * data.
-   * @param {number} touchesChangedAfter timeStamp after which moved touches
-   * are considered "actively moving" - not just "active".
-   * @param {boolean} isXAxis Consider `x` dimension vs. `y` dimension.
-   * @param {boolean} ofCurrent Compute current centroid for actively moving
-   * touches vs. previous centroid of now actively moving touches.
-   * @return {number} value of centroid in specified dimension.
-   */
-  centroidDimension: function(
-    touchHistory,
-    touchesChangedAfter,
-    isXAxis,
-    ofCurrent
-  ) {
-    var touchBank = touchHistory.touchBank;
-    var total = 0;
-    var count = 0;
-
-    var oneTouchData =
-      touchHistory.numberActiveTouches === 1
-        ? touchHistory.touchBank[touchHistory.indexOfSingleActiveTouch]
-        : null;
-
-    if (oneTouchData !== null) {
-      if (
-        oneTouchData.touchActive &&
-        oneTouchData.currentTimeStamp > touchesChangedAfter
-      ) {
-        total +=
-          ofCurrent && isXAxis
-            ? oneTouchData.currentPageX
-            : ofCurrent && !isXAxis
-              ? oneTouchData.currentPageY
-              : !ofCurrent && isXAxis
-                ? oneTouchData.previousPageX
-                : oneTouchData.previousPageY;
-        count = 1;
-      }
-    } else {
-      for (var i = 0; i < touchBank.length; i++) {
-        var touchTrack = touchBank[i];
-        if (
-          touchTrack !== null &&
-          touchTrack !== undefined &&
-          touchTrack.touchActive &&
-          touchTrack.currentTimeStamp >= touchesChangedAfter
-        ) {
-          var toAdd = void 0; // Yuck, program temporarily in invalid state.
-          if (ofCurrent && isXAxis) {
-            toAdd = touchTrack.currentPageX;
-          } else if (ofCurrent && !isXAxis) {
-            toAdd = touchTrack.currentPageY;
-          } else if (!ofCurrent && isXAxis) {
-            toAdd = touchTrack.previousPageX;
-          } else {
-            toAdd = touchTrack.previousPageY;
-          }
-          total += toAdd;
-          count++;
-        }
-      }
-    }
-    return count > 0 ? total / count : TouchHistoryMath.noCentroid;
-  },
-
-  currentCentroidXOfTouchesChangedAfter: function(
-    touchHistory,
-    touchesChangedAfter
-  ) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      touchesChangedAfter,
-      true, // isXAxis
-      true
-    );
-  },
-
-  currentCentroidYOfTouchesChangedAfter: function(
-    touchHistory,
-    touchesChangedAfter
-  ) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      touchesChangedAfter,
-      false, // isXAxis
-      true
-    );
-  },
-
-  previousCentroidXOfTouchesChangedAfter: function(
-    touchHistory,
-    touchesChangedAfter
-  ) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      touchesChangedAfter,
-      true, // isXAxis
-      false
-    );
-  },
-
-  previousCentroidYOfTouchesChangedAfter: function(
-    touchHistory,
-    touchesChangedAfter
-  ) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      touchesChangedAfter,
-      false, // isXAxis
-      false
-    );
-  },
-
-  currentCentroidX: function(touchHistory) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      0, // touchesChangedAfter
-      true, // isXAxis
-      true
-    );
-  },
-
-  currentCentroidY: function(touchHistory) {
-    return TouchHistoryMath.centroidDimension(
-      touchHistory,
-      0, // touchesChangedAfter
-      false, // isXAxis
-      true
-    );
-  },
-
-  noCentroid: -1
-};
-
 // TODO: this is special because it gets imported during build.
 
-var ReactVersion = "16.3.0-alpha.2";
-
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-var objects = {};
-var uniqueID = 1;
-var emptyObject$2 = {};
-
-var ReactNativePropRegistry = (function() {
-  function ReactNativePropRegistry() {
-    _classCallCheck(this, ReactNativePropRegistry);
-  }
-
-  ReactNativePropRegistry.register = function register(object) {
-    var id = ++uniqueID;
-    {
-      Object.freeze(object);
-    }
-    objects[id] = object;
-    return id;
-  };
-
-  ReactNativePropRegistry.getByID = function getByID(id) {
-    if (!id) {
-      // Used in the style={[condition && id]} pattern,
-      // we want it to be a no-op when the value is false or null
-      return emptyObject$2;
-    }
-
-    var object = objects[id];
-    if (!object) {
-      console.warn("Invalid style with id `" + id + "`. Skipping ...");
-      return emptyObject$2;
-    }
-    return object;
-  };
-
-  return ReactNativePropRegistry;
-})();
+var ReactVersion = "16.3.1";
 
 // Modules provided by RN:
 var emptyObject$1 = {};
@@ -2711,13 +2420,6 @@ function defaultDiffer(prevProp, nextProp) {
   }
 }
 
-function resolveObject(idOrObject) {
-  if (typeof idOrObject === "number") {
-    return ReactNativePropRegistry.getByID(idOrObject);
-  }
-  return idOrObject;
-}
-
 function restoreDeletedValuesInNestedArray(
   updatePayload,
   node,
@@ -2733,7 +2435,7 @@ function restoreDeletedValuesInNestedArray(
       );
     }
   } else if (node && removedKeyCount > 0) {
-    var obj = resolveObject(node);
+    var obj = node;
     for (var propKey in removedKeys) {
       if (!removedKeys[propKey]) {
         continue;
@@ -2837,12 +2539,7 @@ function diffNestedProperty(
 
   if (!Array.isArray(prevProp) && !Array.isArray(nextProp)) {
     // Both are leaves, we can diff the leaves.
-    return diffProperties(
-      updatePayload,
-      resolveObject(prevProp),
-      resolveObject(nextProp),
-      validAttributes
-    );
+    return diffProperties(updatePayload, prevProp, nextProp, validAttributes);
   }
 
   if (Array.isArray(prevProp) && Array.isArray(nextProp)) {
@@ -2861,14 +2558,14 @@ function diffNestedProperty(
       // $FlowFixMe - We know that this is always an object when the input is.
       flattenStyle(prevProp),
       // $FlowFixMe - We know that this isn't an array because of above flow.
-      resolveObject(nextProp),
+      nextProp,
       validAttributes
     );
   }
 
   return diffProperties(
     updatePayload,
-    resolveObject(prevProp),
+    prevProp,
     // $FlowFixMe - We know that this is always an object when the input is.
     flattenStyle(nextProp),
     validAttributes
@@ -2887,11 +2584,7 @@ function addNestedProperty(updatePayload, nextProp, validAttributes) {
 
   if (!Array.isArray(nextProp)) {
     // Add each property of the leaf.
-    return addProperties(
-      updatePayload,
-      resolveObject(nextProp),
-      validAttributes
-    );
+    return addProperties(updatePayload, nextProp, validAttributes);
   }
 
   for (var i = 0; i < nextProp.length; i++) {
@@ -2917,11 +2610,7 @@ function clearNestedProperty(updatePayload, prevProp, validAttributes) {
 
   if (!Array.isArray(prevProp)) {
     // Add each property of the leaf.
-    return clearProperties(
-      updatePayload,
-      resolveObject(prevProp),
-      validAttributes
-    );
+    return clearProperties(updatePayload, prevProp, validAttributes);
   }
 
   for (var i = 0; i < prevProp.length; i++) {
@@ -3208,359 +2897,195 @@ function warnForStyleProps(props, validAttributes) {
   }
 }
 
-/**
- * `ReactInstanceMap` maintains a mapping from a public facing stateful
- * instance (key) and the internal representation (value). This allows public
- * methods to accept the user facing instance as an argument and map them back
- * to internal methods.
- *
- * Note that this module is currently shared and assumed to be stateless.
- * If this becomes an actual Map, that will break.
- */
-
-/**
- * This API should be called `delete` but we'd have to make sure to always
- * transform these to strings for IE support. When this transform is fully
- * supported we can rename it.
- */
-
-function get(key) {
-  return key._reactInternalFiber;
-}
-
-function set(key, value) {
-  key._reactInternalFiber = value;
-}
-
-var ReactInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
-
-var ReactCurrentOwner = ReactInternals.ReactCurrentOwner;
-var ReactDebugCurrentFrame = ReactInternals.ReactDebugCurrentFrame;
-
-function getComponentName(fiber) {
-  var type = fiber.type;
-
-  if (typeof type === "function") {
-    return type.displayName || type.name;
-  }
-  if (typeof type === "string") {
-    return type;
-  }
-  switch (type) {
-    case REACT_FRAGMENT_TYPE:
-      return "ReactFragment";
-    case REACT_PORTAL_TYPE:
-      return "ReactPortal";
-    case REACT_CALL_TYPE:
-      return "ReactCall";
-    case REACT_RETURN_TYPE:
-      return "ReactReturn";
-  }
-  return null;
-}
-
-// TODO: Share this module between Fabric and React Native renderers
-// so that both can be used in the same tree.
-
-var findHostInstance = function(fiber) {
-  return null;
-};
-
-var findHostInstanceFabric = function(fiber) {
-  return null;
-};
-
-function injectFindHostInstanceFabric(impl) {
-  findHostInstanceFabric = impl;
-}
-
-/**
- * ReactNative vs ReactWeb
- * -----------------------
- * React treats some pieces of data opaquely. This means that the information
- * is first class (it can be passed around), but cannot be inspected. This
- * allows us to build infrastructure that reasons about resources, without
- * making assumptions about the nature of those resources, and this allows that
- * infra to be shared across multiple platforms, where the resources are very
- * different. General infra (such as `ReactMultiChild`) reasons opaquely about
- * the data, but platform specific code (such as `ReactNativeBaseComponent`) can
- * make assumptions about the data.
- *
- *
- * `rootNodeID`, uniquely identifies a position in the generated native view
- * tree. Many layers of composite components (created with `React.createClass`)
- * can all share the same `rootNodeID`.
- *
- * `nodeHandle`: A sufficiently unambiguous way to refer to a lower level
- * resource (dom node, native view etc). The `rootNodeID` is sufficient for web
- * `nodeHandle`s, because the position in a tree is always enough to uniquely
- * identify a DOM node (we never have nodes in some bank outside of the
- * document). The same would be true for `ReactNative`, but we must maintain a
- * mapping that we can send efficiently serializable
- * strings across native boundaries.
- *
- * Opaque name      TodaysWebReact   FutureWebWorkerReact   ReactNative
- * ----------------------------------------------------------------------------
- * nodeHandle       N/A              rootNodeID             tag
- */
-
-// TODO (bvaughn) Rename the findNodeHandle module to something more descriptive
-// eg findInternalHostInstance. This will reduce the likelihood of someone
-// accidentally deep-requiring this version.
-function findNodeHandle(componentOrHandle) {
-  {
-    var owner = ReactCurrentOwner.current;
-    if (owner !== null && owner.stateNode !== null) {
-      warning(
-        owner.stateNode._warnedAboutRefsInRender,
-        "%s is accessing findNodeHandle inside its render(). " +
-          "render() should be a pure function of props and state. It should " +
-          "never access something that requires stale data from the previous " +
-          "render, such as refs. Move this logic to componentDidMount and " +
-          "componentDidUpdate instead.",
-        getComponentName(owner) || "A component"
-      );
-
-      owner.stateNode._warnedAboutRefsInRender = true;
-    }
-  }
-  if (componentOrHandle == null) {
-    return null;
-  }
-  if (typeof componentOrHandle === "number") {
-    // Already a node handle
-    return componentOrHandle;
-  }
-
-  var component = componentOrHandle;
-
-  // TODO (balpert): Wrap iOS native components in a composite wrapper, then
-  // ReactInstanceMap.get here will always succeed for mounted components
-  var internalInstance = get(component);
-  if (internalInstance) {
-    return (
-      findHostInstance(internalInstance) ||
-      findHostInstanceFabric(internalInstance)
-    );
-  } else {
-    if (component) {
-      return component;
-    } else {
-      invariant(
-        // Native
-        (typeof component === "object" && "_nativeTag" in component) ||
-          // Composite
-          (component.render != null && typeof component.render === "function"),
-        "findNodeHandle(...): Argument is not a component " +
-          "(type: %s, keys: %s)",
-        typeof component,
-        Object.keys(component)
-      );
-      invariant(
-        false,
-        "findNodeHandle(...): Unable to find node handle for unmounted " +
-          "component."
-      );
-    }
-  }
-}
-
-/**
- * External users of findNodeHandle() expect the host tag number return type.
- * The injected findNodeHandle() strategy returns the instance wrapper though.
- * See NativeMethodsMixin#setNativeProps for more info on why this is done.
- */
-function findNumericNodeHandleFiber(componentOrHandle) {
-  var instance = findNodeHandle(componentOrHandle);
-  if (instance == null || typeof instance === "number") {
-    return instance;
-  }
-  return instance._nativeTag;
-}
-
 // Modules provided by RN:
-/**
- * `NativeMethodsMixin` provides methods to access the underlying native
- * component directly. This can be useful in cases when you want to focus
- * a view or measure its on-screen dimensions, for example.
- *
- * The methods described here are available on most of the default components
- * provided by React Native. Note, however, that they are *not* available on
- * composite components that aren't directly backed by a native view. This will
- * generally include most components that you define in your own app. For more
- * information, see [Direct
- * Manipulation](docs/direct-manipulation.html).
- *
- * Note the Flow $Exact<> syntax is required to support mixins.
- * React createClass mixins can only be used with exact types.
- */
-var NativeMethodsMixin = {
+var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
   /**
-   * Determines the location on screen, width, and height of the given view and
-   * returns the values via an async callback. If successful, the callback will
-   * be called with the following arguments:
+   * `NativeMethodsMixin` provides methods to access the underlying native
+   * component directly. This can be useful in cases when you want to focus
+   * a view or measure its on-screen dimensions, for example.
    *
-   *  - x
-   *  - y
-   *  - width
-   *  - height
-   *  - pageX
-   *  - pageY
+   * The methods described here are available on most of the default components
+   * provided by React Native. Note, however, that they are *not* available on
+   * composite components that aren't directly backed by a native view. This will
+   * generally include most components that you define in your own app. For more
+   * information, see [Direct
+   * Manipulation](docs/direct-manipulation.html).
    *
-   * Note that these measurements are not available until after the rendering
-   * has been completed in native. If you need the measurements as soon as
-   * possible, consider using the [`onLayout`
-   * prop](docs/view.html#onlayout) instead.
+   * Note the Flow $Exact<> syntax is required to support mixins.
+   * React createClass mixins can only be used with exact types.
    */
-  measure: function(callback) {
-    UIManager.measure(
-      findNumericNodeHandleFiber(this),
-      mountSafeCallback(this, callback)
-    );
-  },
-
-  /**
-   * Determines the location of the given view in the window and returns the
-   * values via an async callback. If the React root view is embedded in
-   * another native view, this will give you the absolute coordinates. If
-   * successful, the callback will be called with the following
-   * arguments:
-   *
-   *  - x
-   *  - y
-   *  - width
-   *  - height
-   *
-   * Note that these measurements are not available until after the rendering
-   * has been completed in native.
-   */
-  measureInWindow: function(callback) {
-    UIManager.measureInWindow(
-      findNumericNodeHandleFiber(this),
-      mountSafeCallback(this, callback)
-    );
-  },
-
-  /**
-   * Like [`measure()`](#measure), but measures the view relative an ancestor,
-   * specified as `relativeToNativeNode`. This means that the returned x, y
-   * are relative to the origin x, y of the ancestor view.
-   *
-   * As always, to obtain a native node handle for a component, you can use
-   * `findNumericNodeHandle(component)`.
-   */
-  measureLayout: function(
-    relativeToNativeNode,
-    onSuccess,
-    onFail /* currently unused */
-  ) {
-    UIManager.measureLayout(
-      findNumericNodeHandleFiber(this),
-      relativeToNativeNode,
-      mountSafeCallback(this, onFail),
-      mountSafeCallback(this, onSuccess)
-    );
-  },
-
-  /**
-   * This function sends props straight to native. They will not participate in
-   * future diff process - this means that if you do not include them in the
-   * next render, they will remain active (see [Direct
-   * Manipulation](docs/direct-manipulation.html)).
-   */
-  setNativeProps: function(nativeProps) {
-    // Class components don't have viewConfig -> validateAttributes.
-    // Nor does it make sense to set native props on a non-native component.
-    // Instead, find the nearest host component and set props on it.
-    // Use findNodeHandle() rather than findNumericNodeHandle() because
-    // We want the instance/wrapper (not the native tag).
-    var maybeInstance = void 0;
-
-    // Fiber errors if findNodeHandle is called for an umounted component.
-    // Tests using ReactTestRenderer will trigger this case indirectly.
-    // Mimicking stack behavior, we should silently ignore this case.
-    // TODO Fix ReactTestRenderer so we can remove this try/catch.
-    try {
-      maybeInstance = findNodeHandle(this);
-    } catch (error) {}
-
-    // If there is no host component beneath this we should fail silently.
-    // This is not an error; it could mean a class component rendered null.
-    if (maybeInstance == null) {
-      return;
-    }
-
-    var viewConfig = maybeInstance.viewConfig;
-
-    {
-      warnForStyleProps(nativeProps, viewConfig.validAttributes);
-    }
-
-    var updatePayload = create(nativeProps, viewConfig.validAttributes);
-
-    // Avoid the overhead of bridge calls if there's no update.
-    // This is an expensive no-op for Android, and causes an unnecessary
-    // view invalidation for certain components (eg RCTTextInput) on iOS.
-    if (updatePayload != null) {
-      UIManager.updateView(
-        maybeInstance._nativeTag,
-        viewConfig.uiViewClassName,
-        updatePayload
+  var NativeMethodsMixin = {
+    /**
+     * Determines the location on screen, width, and height of the given view and
+     * returns the values via an async callback. If successful, the callback will
+     * be called with the following arguments:
+     *
+     *  - x
+     *  - y
+     *  - width
+     *  - height
+     *  - pageX
+     *  - pageY
+     *
+     * Note that these measurements are not available until after the rendering
+     * has been completed in native. If you need the measurements as soon as
+     * possible, consider using the [`onLayout`
+     * prop](docs/view.html#onlayout) instead.
+     */
+    measure: function(callback) {
+      UIManager.measure(
+        findNodeHandle(this),
+        mountSafeCallback(this, callback)
       );
+    },
+
+    /**
+     * Determines the location of the given view in the window and returns the
+     * values via an async callback. If the React root view is embedded in
+     * another native view, this will give you the absolute coordinates. If
+     * successful, the callback will be called with the following
+     * arguments:
+     *
+     *  - x
+     *  - y
+     *  - width
+     *  - height
+     *
+     * Note that these measurements are not available until after the rendering
+     * has been completed in native.
+     */
+    measureInWindow: function(callback) {
+      UIManager.measureInWindow(
+        findNodeHandle(this),
+        mountSafeCallback(this, callback)
+      );
+    },
+
+    /**
+     * Like [`measure()`](#measure), but measures the view relative an ancestor,
+     * specified as `relativeToNativeNode`. This means that the returned x, y
+     * are relative to the origin x, y of the ancestor view.
+     *
+     * As always, to obtain a native node handle for a component, you can use
+     * `findNodeHandle(component)`.
+     */
+    measureLayout: function(
+      relativeToNativeNode,
+      onSuccess,
+      onFail /* currently unused */
+    ) {
+      UIManager.measureLayout(
+        findNodeHandle(this),
+        relativeToNativeNode,
+        mountSafeCallback(this, onFail),
+        mountSafeCallback(this, onSuccess)
+      );
+    },
+
+    /**
+     * This function sends props straight to native. They will not participate in
+     * future diff process - this means that if you do not include them in the
+     * next render, they will remain active (see [Direct
+     * Manipulation](docs/direct-manipulation.html)).
+     */
+    setNativeProps: function(nativeProps) {
+      // Class components don't have viewConfig -> validateAttributes.
+      // Nor does it make sense to set native props on a non-native component.
+      // Instead, find the nearest host component and set props on it.
+      // Use findNodeHandle() rather than findNodeHandle() because
+      // We want the instance/wrapper (not the native tag).
+      var maybeInstance = void 0;
+
+      // Fiber errors if findNodeHandle is called for an umounted component.
+      // Tests using ReactTestRenderer will trigger this case indirectly.
+      // Mimicking stack behavior, we should silently ignore this case.
+      // TODO Fix ReactTestRenderer so we can remove this try/catch.
+      try {
+        maybeInstance = findHostInstance(this);
+      } catch (error) {}
+
+      // If there is no host component beneath this we should fail silently.
+      // This is not an error; it could mean a class component rendered null.
+      if (maybeInstance == null) {
+        return;
+      }
+
+      var viewConfig = maybeInstance.viewConfig;
+
+      {
+        warnForStyleProps(nativeProps, viewConfig.validAttributes);
+      }
+
+      var updatePayload = create(nativeProps, viewConfig.validAttributes);
+
+      // Avoid the overhead of bridge calls if there's no update.
+      // This is an expensive no-op for Android, and causes an unnecessary
+      // view invalidation for certain components (eg RCTTextInput) on iOS.
+      if (updatePayload != null) {
+        UIManager.updateView(
+          maybeInstance._nativeTag,
+          viewConfig.uiViewClassName,
+          updatePayload
+        );
+      }
+    },
+
+    /**
+     * Requests focus for the given input or view. The exact behavior triggered
+     * will depend on the platform and type of view.
+     */
+    focus: function() {
+      TextInputState.focusTextInput(findNodeHandle(this));
+    },
+
+    /**
+     * Removes focus from an input or view. This is the opposite of `focus()`.
+     */
+    blur: function() {
+      TextInputState.blurTextInput(findNodeHandle(this));
     }
-  },
+  };
 
-  /**
-   * Requests focus for the given input or view. The exact behavior triggered
-   * will depend on the platform and type of view.
-   */
-  focus: function() {
-    TextInputState.focusTextInput(findNumericNodeHandleFiber(this));
-  },
+  {
+    // hide this from Flow since we can't define these properties outside of
+    // true without actually implementing them (setting them to undefined
+    // isn't allowed by ReactClass)
+    var NativeMethodsMixin_DEV = NativeMethodsMixin;
+    invariant(
+      !NativeMethodsMixin_DEV.componentWillMount &&
+        !NativeMethodsMixin_DEV.componentWillReceiveProps &&
+        !NativeMethodsMixin_DEV.UNSAFE_componentWillMount &&
+        !NativeMethodsMixin_DEV.UNSAFE_componentWillReceiveProps,
+      "Do not override existing functions."
+    );
+    // TODO (bvaughn) Remove cWM and cWRP in a future version of React Native,
+    // Once these lifecycles have been remove from the reconciler.
+    NativeMethodsMixin_DEV.componentWillMount = function() {
+      throwOnStylesProp(this, this.props);
+    };
+    NativeMethodsMixin_DEV.componentWillReceiveProps = function(newProps) {
+      throwOnStylesProp(this, newProps);
+    };
+    NativeMethodsMixin_DEV.UNSAFE_componentWillMount = function() {
+      throwOnStylesProp(this, this.props);
+    };
+    NativeMethodsMixin_DEV.UNSAFE_componentWillReceiveProps = function(
+      newProps
+    ) {
+      throwOnStylesProp(this, newProps);
+    };
 
-  /**
-   * Removes focus from an input or view. This is the opposite of `focus()`.
-   */
-  blur: function() {
-    TextInputState.blurTextInput(findNumericNodeHandleFiber(this));
+    // React may warn about cWM/cWRP/cWU methods being deprecated.
+    // Add a flag to suppress these warnings for this special case.
+    // TODO (bvaughn) Remove this flag once the above methods have been removed.
+    NativeMethodsMixin_DEV.componentWillMount.__suppressDeprecationWarning = true;
+    NativeMethodsMixin_DEV.componentWillReceiveProps.__suppressDeprecationWarning = true;
   }
+
+  return NativeMethodsMixin;
 };
 
-{
-  // hide this from Flow since we can't define these properties outside of
-  // true without actually implementing them (setting them to undefined
-  // isn't allowed by ReactClass)
-  var NativeMethodsMixin_DEV = NativeMethodsMixin;
-  invariant(
-    !NativeMethodsMixin_DEV.componentWillMount &&
-      !NativeMethodsMixin_DEV.componentWillReceiveProps &&
-      !NativeMethodsMixin_DEV.UNSAFE_componentWillMount &&
-      !NativeMethodsMixin_DEV.UNSAFE_componentWillReceiveProps,
-    "Do not override existing functions."
-  );
-  // TODO (bvaughn) Remove cWM and cWRP in a future version of React Native,
-  // Once these lifecycles have been remove from the reconciler.
-  NativeMethodsMixin_DEV.componentWillMount = function() {
-    throwOnStylesProp(this, this.props);
-  };
-  NativeMethodsMixin_DEV.componentWillReceiveProps = function(newProps) {
-    throwOnStylesProp(this, newProps);
-  };
-  NativeMethodsMixin_DEV.UNSAFE_componentWillMount = function() {
-    throwOnStylesProp(this, this.props);
-  };
-  NativeMethodsMixin_DEV.UNSAFE_componentWillReceiveProps = function(newProps) {
-    throwOnStylesProp(this, newProps);
-  };
-
-  // React may warn about cWM/cWRP/cWU methods being deprecated.
-  // Add a flag to suppress these warnings for this special case.
-  // TODO (bvaughn) Remove this flag once the above methods have been removed.
-  NativeMethodsMixin_DEV.componentWillMount.__suppressDeprecationWarning = true;
-  NativeMethodsMixin_DEV.componentWillReceiveProps.__suppressDeprecationWarning = true;
-}
-
-function _classCallCheck$1(instance, Constructor) {
+function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
@@ -3599,166 +3124,171 @@ function _inherits(subClass, superClass) {
 }
 
 // Modules provided by RN:
-/**
- * Superclass that provides methods to access the underlying native component.
- * This can be useful when you want to focus a view or measure its dimensions.
- *
- * Methods implemented by this class are available on most default components
- * provided by React Native. However, they are *not* available on composite
- * components that are not directly backed by a native view. For more
- * information, see [Direct Manipulation](docs/direct-manipulation.html).
- *
- * @abstract
- */
-
-var ReactNativeComponent = (function(_React$Component) {
-  _inherits(ReactNativeComponent, _React$Component);
-
-  function ReactNativeComponent() {
-    _classCallCheck$1(this, ReactNativeComponent);
-
-    return _possibleConstructorReturn(
-      this,
-      _React$Component.apply(this, arguments)
-    );
-  }
-
+var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
   /**
-   * Removes focus. This is the opposite of `focus()`.
-   */
-
-  /**
-   * Due to bugs in Flow's handling of React.createClass, some fields already
-   * declared in the base class need to be redeclared below.
-   */
-  ReactNativeComponent.prototype.blur = function blur() {
-    TextInputState.blurTextInput(findNumericNodeHandleFiber(this));
-  };
-
-  /**
-   * Requests focus. The exact behavior depends on the platform and view.
-   */
-
-  ReactNativeComponent.prototype.focus = function focus() {
-    TextInputState.focusTextInput(findNumericNodeHandleFiber(this));
-  };
-
-  /**
-   * Measures the on-screen location and dimensions. If successful, the callback
-   * will be called asynchronously with the following arguments:
+   * Superclass that provides methods to access the underlying native component.
+   * This can be useful when you want to focus a view or measure its dimensions.
    *
-   *  - x
-   *  - y
-   *  - width
-   *  - height
-   *  - pageX
-   *  - pageY
+   * Methods implemented by this class are available on most default components
+   * provided by React Native. However, they are *not* available on composite
+   * components that are not directly backed by a native view. For more
+   * information, see [Direct Manipulation](docs/direct-manipulation.html).
    *
-   * These values are not available until after natives rendering completes. If
-   * you need the measurements as soon as possible, consider using the
-   * [`onLayout` prop](docs/view.html#onlayout) instead.
+   * @abstract
    */
+  var ReactNativeComponent = (function(_React$Component) {
+    _inherits(ReactNativeComponent, _React$Component);
 
-  ReactNativeComponent.prototype.measure = function measure(callback) {
-    UIManager.measure(
-      findNumericNodeHandleFiber(this),
-      mountSafeCallback(this, callback)
-    );
-  };
+    function ReactNativeComponent() {
+      _classCallCheck(this, ReactNativeComponent);
 
-  /**
-   * Measures the on-screen location and dimensions. Even if the React Native
-   * root view is embedded within another native view, this method will give you
-   * the absolute coordinates measured from the window. If successful, the
-   * callback will be called asynchronously with the following arguments:
-   *
-   *  - x
-   *  - y
-   *  - width
-   *  - height
-   *
-   * These values are not available until after natives rendering completes.
-   */
-
-  ReactNativeComponent.prototype.measureInWindow = function measureInWindow(
-    callback
-  ) {
-    UIManager.measureInWindow(
-      findNumericNodeHandleFiber(this),
-      mountSafeCallback(this, callback)
-    );
-  };
-
-  /**
-   * Similar to [`measure()`](#measure), but the resulting location will be
-   * relative to the supplied ancestor's location.
-   *
-   * Obtain a native node handle with `ReactNative.findNodeHandle(component)`.
-   */
-
-  ReactNativeComponent.prototype.measureLayout = function measureLayout(
-    relativeToNativeNode,
-    onSuccess,
-    onFail /* currently unused */
-  ) {
-    UIManager.measureLayout(
-      findNumericNodeHandleFiber(this),
-      relativeToNativeNode,
-      mountSafeCallback(this, onFail),
-      mountSafeCallback(this, onSuccess)
-    );
-  };
-
-  /**
-   * This function sends props straight to native. They will not participate in
-   * future diff process - this means that if you do not include them in the
-   * next render, they will remain active (see [Direct
-   * Manipulation](docs/direct-manipulation.html)).
-   */
-
-  ReactNativeComponent.prototype.setNativeProps = function setNativeProps(
-    nativeProps
-  ) {
-    // Class components don't have viewConfig -> validateAttributes.
-    // Nor does it make sense to set native props on a non-native component.
-    // Instead, find the nearest host component and set props on it.
-    // Use findNodeHandle() rather than ReactNative.findNodeHandle() because
-    // We want the instance/wrapper (not the native tag).
-    var maybeInstance = void 0;
-
-    // Fiber errors if findNodeHandle is called for an umounted component.
-    // Tests using ReactTestRenderer will trigger this case indirectly.
-    // Mimicking stack behavior, we should silently ignore this case.
-    // TODO Fix ReactTestRenderer so we can remove this try/catch.
-    try {
-      maybeInstance = findNodeHandle(this);
-    } catch (error) {}
-
-    // If there is no host component beneath this we should fail silently.
-    // This is not an error; it could mean a class component rendered null.
-    if (maybeInstance == null) {
-      return;
-    }
-
-    var viewConfig =
-      maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
-
-    var updatePayload = create(nativeProps, viewConfig.validAttributes);
-
-    // Avoid the overhead of bridge calls if there's no update.
-    // This is an expensive no-op for Android, and causes an unnecessary
-    // view invalidation for certain components (eg RCTTextInput) on iOS.
-    if (updatePayload != null) {
-      UIManager.updateView(
-        maybeInstance._nativeTag,
-        viewConfig.uiViewClassName,
-        updatePayload
+      return _possibleConstructorReturn(
+        this,
+        _React$Component.apply(this, arguments)
       );
     }
-  };
+
+    /**
+     * Removes focus. This is the opposite of `focus()`.
+     */
+
+    /**
+     * Due to bugs in Flow's handling of React.createClass, some fields already
+     * declared in the base class need to be redeclared below.
+     */
+    ReactNativeComponent.prototype.blur = function blur() {
+      TextInputState.blurTextInput(findNodeHandle(this));
+    };
+
+    /**
+     * Requests focus. The exact behavior depends on the platform and view.
+     */
+
+    ReactNativeComponent.prototype.focus = function focus() {
+      TextInputState.focusTextInput(findNodeHandle(this));
+    };
+
+    /**
+     * Measures the on-screen location and dimensions. If successful, the callback
+     * will be called asynchronously with the following arguments:
+     *
+     *  - x
+     *  - y
+     *  - width
+     *  - height
+     *  - pageX
+     *  - pageY
+     *
+     * These values are not available until after natives rendering completes. If
+     * you need the measurements as soon as possible, consider using the
+     * [`onLayout` prop](docs/view.html#onlayout) instead.
+     */
+
+    ReactNativeComponent.prototype.measure = function measure(callback) {
+      UIManager.measure(
+        findNodeHandle(this),
+        mountSafeCallback(this, callback)
+      );
+    };
+
+    /**
+     * Measures the on-screen location and dimensions. Even if the React Native
+     * root view is embedded within another native view, this method will give you
+     * the absolute coordinates measured from the window. If successful, the
+     * callback will be called asynchronously with the following arguments:
+     *
+     *  - x
+     *  - y
+     *  - width
+     *  - height
+     *
+     * These values are not available until after natives rendering completes.
+     */
+
+    ReactNativeComponent.prototype.measureInWindow = function measureInWindow(
+      callback
+    ) {
+      UIManager.measureInWindow(
+        findNodeHandle(this),
+        mountSafeCallback(this, callback)
+      );
+    };
+
+    /**
+     * Similar to [`measure()`](#measure), but the resulting location will be
+     * relative to the supplied ancestor's location.
+     *
+     * Obtain a native node handle with `ReactNative.findNodeHandle(component)`.
+     */
+
+    ReactNativeComponent.prototype.measureLayout = function measureLayout(
+      relativeToNativeNode,
+      onSuccess,
+      onFail /* currently unused */
+    ) {
+      UIManager.measureLayout(
+        findNodeHandle(this),
+        relativeToNativeNode,
+        mountSafeCallback(this, onFail),
+        mountSafeCallback(this, onSuccess)
+      );
+    };
+
+    /**
+     * This function sends props straight to native. They will not participate in
+     * future diff process - this means that if you do not include them in the
+     * next render, they will remain active (see [Direct
+     * Manipulation](docs/direct-manipulation.html)).
+     */
+
+    ReactNativeComponent.prototype.setNativeProps = function setNativeProps(
+      nativeProps
+    ) {
+      // Class components don't have viewConfig -> validateAttributes.
+      // Nor does it make sense to set native props on a non-native component.
+      // Instead, find the nearest host component and set props on it.
+      // Use findNodeHandle() rather than ReactNative.findNodeHandle() because
+      // We want the instance/wrapper (not the native tag).
+      var maybeInstance = void 0;
+
+      // Fiber errors if findNodeHandle is called for an umounted component.
+      // Tests using ReactTestRenderer will trigger this case indirectly.
+      // Mimicking stack behavior, we should silently ignore this case.
+      // TODO Fix ReactTestRenderer so we can remove this try/catch.
+      try {
+        maybeInstance = findHostInstance(this);
+      } catch (error) {}
+
+      // If there is no host component beneath this we should fail silently.
+      // This is not an error; it could mean a class component rendered null.
+      if (maybeInstance == null) {
+        return;
+      }
+
+      var viewConfig =
+        maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
+
+      var updatePayload = create(nativeProps, viewConfig.validAttributes);
+
+      // Avoid the overhead of bridge calls if there's no update.
+      // This is an expensive no-op for Android, and causes an unnecessary
+      // view invalidation for certain components (eg RCTTextInput) on iOS.
+      if (updatePayload != null) {
+        UIManager.updateView(
+          maybeInstance._nativeTag,
+          viewConfig.uiViewClassName,
+          updatePayload
+        );
+      }
+    };
+
+    return ReactNativeComponent;
+  })(React.Component);
+
+  // eslint-disable-next-line no-unused-expressions
 
   return ReactNativeComponent;
-})(React.Component);
+};
 
 var hasNativePerformanceNow =
   typeof performance === "object" && typeof performance.now === "function";
@@ -3777,7 +3307,8 @@ var frameDeadline = 0;
 var frameDeadlineObject = {
   timeRemaining: function() {
     return frameDeadline - now();
-  }
+  },
+  didTimeout: false
 };
 
 function setTimeoutCallback() {
@@ -3808,47 +3339,55 @@ function cancelDeferredCallback(callbackID) {
   clearTimeout(callbackID);
 }
 
-var viewConfigCallbacks = new Map();
-var viewConfigs = new Map();
+/**
+ * `ReactInstanceMap` maintains a mapping from a public facing stateful
+ * instance (key) and the internal representation (value). This allows public
+ * methods to accept the user facing instance as an argument and map them back
+ * to internal methods.
+ *
+ * Note that this module is currently shared and assumed to be stateless.
+ * If this becomes an actual Map, that will break.
+ */
 
 /**
- * Registers a native view/component by name.
- * A callback is provided to load the view config from UIManager.
- * The callback is deferred until the view is actually rendered.
- * This is done to avoid causing Prepack deopts.
+ * This API should be called `delete` but we'd have to make sure to always
+ * transform these to strings for IE support. When this transform is fully
+ * supported we can rename it.
  */
-function register(name, callback) {
-  invariant(
-    !viewConfigCallbacks.has(name),
-    "Tried to register two views with the same name %s",
-    name
-  );
-  viewConfigCallbacks.set(name, callback);
-  return name;
+
+function get$1(key) {
+  return key._reactInternalFiber;
 }
 
-/**
- * Retrieves a config for the specified view.
- * If this is the first time the view has been used,
- * This configuration will be lazy-loaded from UIManager.
- */
-function get$1(name) {
-  var viewConfig = void 0;
-  if (!viewConfigs.has(name)) {
-    var callback = viewConfigCallbacks.get(name);
-    invariant(
-      typeof callback === "function",
-      "View config not found for name %s",
-      name
-    );
-    viewConfigCallbacks.set(name, null);
-    viewConfig = callback();
-    viewConfigs.set(name, viewConfig);
-  } else {
-    viewConfig = viewConfigs.get(name);
+function set(key, value) {
+  key._reactInternalFiber = value;
+}
+
+var ReactInternals = React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
+
+var ReactCurrentOwner = ReactInternals.ReactCurrentOwner;
+var ReactDebugCurrentFrame = ReactInternals.ReactDebugCurrentFrame;
+
+function getComponentName(fiber) {
+  var type = fiber.type;
+
+  if (typeof type === "function") {
+    return type.displayName || type.name;
   }
-  invariant(viewConfig, "View config not found for name %s", name);
-  return viewConfig;
+  if (typeof type === "string") {
+    return type;
+  }
+  switch (type) {
+    case REACT_FRAGMENT_TYPE:
+      return "ReactFragment";
+    case REACT_PORTAL_TYPE:
+      return "ReactPortal";
+    case REACT_CALL_TYPE:
+      return "ReactCall";
+    case REACT_RETURN_TYPE:
+      return "ReactReturn";
+  }
+  return null;
 }
 
 // Don't change these two values. They're used by React Dev Tools.
@@ -3865,9 +3404,10 @@ var Callback = /*              */ 32;
 var DidCapture = /*            */ 64;
 var Ref = /*                   */ 128;
 var ErrLog = /*                */ 256;
+var Snapshot = /*              */ 2048;
 
 // Union of all host effects
-var HostEffectMask = /*        */ 511;
+var HostEffectMask = /*        */ 2559;
 
 var Incomplete = /*            */ 512;
 var ShouldCapture = /*         */ 1024;
@@ -3915,20 +3455,22 @@ function isMounted(component) {
     if (owner !== null && owner.tag === ClassComponent) {
       var ownerFiber = owner;
       var instance = ownerFiber.stateNode;
-      warning(
-        instance._warnedAboutRefsInRender,
-        "%s is accessing isMounted inside its render() function. " +
-          "render() should be a pure function of props and state. It should " +
-          "never access something that requires stale data from the previous " +
-          "render, such as refs. Move this logic to componentDidMount and " +
-          "componentDidUpdate instead.",
-        getComponentName(ownerFiber) || "A component"
-      );
+      !instance._warnedAboutRefsInRender
+        ? warning(
+            false,
+            "%s is accessing isMounted inside its render() function. " +
+              "render() should be a pure function of props and state. It should " +
+              "never access something that requires stale data from the previous " +
+              "render, such as refs. Move this logic to componentDidMount and " +
+              "componentDidUpdate instead.",
+            getComponentName(ownerFiber) || "A component"
+          )
+        : void 0;
       instance._warnedAboutRefsInRender = true;
     }
   }
 
-  var fiber = get(component);
+  var fiber = get$1(component);
   if (!fiber) {
     return false;
   }
@@ -4476,6 +4018,47 @@ function createFiberFromPortal(portal, mode, expirationTime) {
   return fiber;
 }
 
+// Used for stashing WIP properties to replay failed work in DEV.
+function assignFiberPropertiesInDEV(target, source) {
+  if (target === null) {
+    // This Fiber's initial properties will always be overwritten.
+    // We only use a Fiber to ensure the same hidden class so DEV isn't slow.
+    target = createFiber(IndeterminateComponent, null, null, NoContext);
+  }
+
+  // This is intentionally written as a list of all properties.
+  // We tried to use Object.assign() instead but this is called in
+  // the hottest path, and Object.assign() was too slow:
+  // https://github.com/facebook/react/issues/12502
+  // This code is DEV-only so size is not a concern.
+
+  target.tag = source.tag;
+  target.key = source.key;
+  target.type = source.type;
+  target.stateNode = source.stateNode;
+  target["return"] = source["return"];
+  target.child = source.child;
+  target.sibling = source.sibling;
+  target.index = source.index;
+  target.ref = source.ref;
+  target.pendingProps = source.pendingProps;
+  target.memoizedProps = source.memoizedProps;
+  target.updateQueue = source.updateQueue;
+  target.memoizedState = source.memoizedState;
+  target.mode = source.mode;
+  target.effectTag = source.effectTag;
+  target.nextEffect = source.nextEffect;
+  target.firstEffect = source.firstEffect;
+  target.lastEffect = source.lastEffect;
+  target.expirationTime = source.expirationTime;
+  target.alternate = source.alternate;
+  target._debugID = source._debugID;
+  target._debugSource = source._debugSource;
+  target._debugOwner = source._debugOwner;
+  target._debugIsCurrentlyTiming = source._debugIsCurrentlyTiming;
+  return target;
+}
+
 // TODO: This should be lifted into the renderer.
 
 function createFiberRoot(containerInfo, isAsync, hydrate) {
@@ -4712,6 +4295,14 @@ var ReactStrictModeWarnings = {
   var didWarnAboutDeprecatedLifecycles = new Set();
   var didWarnAboutUnsafeLifecycles = new Set();
 
+  var setToSortedString = function(set) {
+    var array = [];
+    set.forEach(function(value) {
+      array.push(value);
+    });
+    return array.sort().join(", ");
+  };
+
   ReactStrictModeWarnings.discardPendingWarnings = function() {
     pendingComponentWillMountWarnings = [];
     pendingComponentWillReceivePropsWarnings = [];
@@ -4737,9 +4328,7 @@ var ReactStrictModeWarnings = {
 
           var formatted = lifecycle.replace("UNSAFE_", "");
           var suggestion = LIFECYCLE_SUGGESTIONS[lifecycle];
-          var sortedComponentNames = Array.from(componentNames)
-            .sort()
-            .join(", ");
+          var sortedComponentNames = setToSortedString(componentNames);
 
           lifecyclesWarningMesages.push(
             formatted +
@@ -4791,9 +4380,7 @@ var ReactStrictModeWarnings = {
         didWarnAboutDeprecatedLifecycles.add(fiber.type);
       });
 
-      var sortedNames = Array.from(uniqueNames)
-        .sort()
-        .join(", ");
+      var sortedNames = setToSortedString(uniqueNames);
 
       lowPriorityWarning$1(
         false,
@@ -4816,9 +4403,7 @@ var ReactStrictModeWarnings = {
         didWarnAboutDeprecatedLifecycles.add(fiber.type);
       });
 
-      var _sortedNames = Array.from(_uniqueNames)
-        .sort()
-        .join(", ");
+      var _sortedNames = setToSortedString(_uniqueNames);
 
       lowPriorityWarning$1(
         false,
@@ -4840,9 +4425,7 @@ var ReactStrictModeWarnings = {
         didWarnAboutDeprecatedLifecycles.add(fiber.type);
       });
 
-      var _sortedNames2 = Array.from(_uniqueNames2)
-        .sort()
-        .join(", ");
+      var _sortedNames2 = setToSortedString(_uniqueNames2);
 
       lowPriorityWarning$1(
         false,
@@ -4881,7 +4464,10 @@ var ReactStrictModeWarnings = {
     ) {
       pendingComponentWillReceivePropsWarnings.push(fiber);
     }
-    if (typeof instance.componentWillUpdate === "function") {
+    if (
+      typeof instance.componentWillUpdate === "function" &&
+      instance.componentWillUpdate.__suppressDeprecationWarning !== true
+    ) {
       pendingComponentWillUpdateWarnings.push(fiber);
     }
   };
@@ -4954,7 +4540,6 @@ var ReactStrictModeWarnings = {
 
 var debugRenderPhaseSideEffects = false;
 var debugRenderPhaseSideEffectsForStrictMode = false;
-
 var enableUserTimingAPI = true;
 var enableGetDerivedStateFromCatch = false;
 var warnAboutDeprecatedLifecycles = false;
@@ -5223,13 +4808,15 @@ function startRequestCallbackTimer() {
   }
 }
 
-function stopRequestCallbackTimer(didExpire) {
+function stopRequestCallbackTimer(didExpire, expirationTime) {
   if (enableUserTimingAPI) {
     if (supportsUserTiming) {
       isWaitingForCallback = false;
       var warning$$1 = didExpire ? "React was blocked by main thread" : null;
       endMark(
-        "(Waiting for async callback...)",
+        "(Waiting for async callback... will force flush in " +
+          expirationTime +
+          " ms)",
         "(Waiting for async callback...)",
         warning$$1
       );
@@ -5339,7 +4926,7 @@ function startWorkLoopTimer(nextUnitOfWork) {
   }
 }
 
-function stopWorkLoopTimer(interruptedBy) {
+function stopWorkLoopTimer(interruptedBy, didCompleteRoot) {
   if (enableUserTimingAPI) {
     if (!supportsUserTiming) {
       return;
@@ -5357,13 +4944,12 @@ function stopWorkLoopTimer(interruptedBy) {
       warning$$1 = "There were cascading updates";
     }
     commitCountInCurrentWorkLoop = 0;
+    var label = didCompleteRoot
+      ? "(React Tree Reconciliation: Completed Root)"
+      : "(React Tree Reconciliation: Yielded)";
     // Pause any measurements until the next loop.
     pauseTimers();
-    endMark(
-      "(React Tree Reconciliation)",
-      "(React Tree Reconciliation)",
-      warning$$1
-    );
+    endMark(label, "(React Tree Reconciliation)", warning$$1);
   }
 }
 
@@ -5397,6 +4983,31 @@ function stopCommitTimer() {
     labelsInCurrentCommit.clear();
 
     endMark("(Committing Changes)", "(Committing Changes)", warning$$1);
+  }
+}
+
+function startCommitSnapshotEffectsTimer() {
+  if (enableUserTimingAPI) {
+    if (!supportsUserTiming) {
+      return;
+    }
+    effectCountInCurrentCommit = 0;
+    beginMark("(Committing Snapshot Effects)");
+  }
+}
+
+function stopCommitSnapshotEffectsTimer() {
+  if (enableUserTimingAPI) {
+    if (!supportsUserTiming) {
+      return;
+    }
+    var count = effectCountInCurrentCommit;
+    effectCountInCurrentCommit = 0;
+    endMark(
+      "(Committing Snapshot Effects: " + count + " Total)",
+      "(Committing Snapshot Effects)",
+      null
+    );
   }
 }
 
@@ -5784,23 +5395,26 @@ var isArray = Array.isArray;
 var didWarnAboutStateAssignmentForComponent = void 0;
 var didWarnAboutUndefinedDerivedState = void 0;
 var didWarnAboutUninitializedState = void 0;
-var didWarnAboutWillReceivePropsAndDerivedState = void 0;
+var didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate = void 0;
+var didWarnAboutLegacyLifecyclesAndDerivedState = void 0;
 var warnOnInvalidCallback = void 0;
 
 {
-  didWarnAboutStateAssignmentForComponent = {};
-  didWarnAboutUndefinedDerivedState = {};
-  didWarnAboutUninitializedState = {};
-  didWarnAboutWillReceivePropsAndDerivedState = {};
+  didWarnAboutStateAssignmentForComponent = new Set();
+  didWarnAboutUndefinedDerivedState = new Set();
+  didWarnAboutUninitializedState = new Set();
+  didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate = new Set();
+  didWarnAboutLegacyLifecyclesAndDerivedState = new Set();
 
-  var didWarnOnInvalidCallback = {};
+  var didWarnOnInvalidCallback = new Set();
 
   warnOnInvalidCallback = function(callback, callerName) {
     if (callback === null || typeof callback === "function") {
       return;
     }
     var key = callerName + "_" + callback;
-    if (!didWarnOnInvalidCallback[key]) {
+    if (!didWarnOnInvalidCallback.has(key)) {
+      didWarnOnInvalidCallback.add(key);
       warning(
         false,
         "%s(...): Expected the last optional `callback` argument to be a " +
@@ -5808,7 +5422,6 @@ var warnOnInvalidCallback = void 0;
         callerName,
         callback
       );
-      didWarnOnInvalidCallback[key] = true;
     }
   };
 
@@ -5864,7 +5477,7 @@ var ReactFiberClassComponent = function(
   var updater = {
     isMounted: isMounted,
     enqueueSetState: function(instance, partialState, callback) {
-      var fiber = get(instance);
+      var fiber = get$1(instance);
       callback = callback === undefined ? null : callback;
       {
         warnOnInvalidCallback(callback, "setState");
@@ -5883,7 +5496,7 @@ var ReactFiberClassComponent = function(
       scheduleWork(fiber, expirationTime);
     },
     enqueueReplaceState: function(instance, state, callback) {
-      var fiber = get(instance);
+      var fiber = get$1(instance);
       callback = callback === undefined ? null : callback;
       {
         warnOnInvalidCallback(callback, "replaceState");
@@ -5902,7 +5515,7 @@ var ReactFiberClassComponent = function(
       scheduleWork(fiber, expirationTime);
     },
     enqueueForceUpdate: function(instance, callback) {
-      var fiber = get(instance);
+      var fiber = get$1(instance);
       callback = callback === undefined ? null : callback;
       {
         warnOnInvalidCallback(callback, "forceUpdate");
@@ -5951,12 +5564,14 @@ var ReactFiberClassComponent = function(
       stopPhaseTimer();
 
       {
-        warning(
-          shouldUpdate !== undefined,
-          "%s.shouldComponentUpdate(): Returned undefined instead of a " +
-            "boolean value. Make sure to return true or false.",
-          getComponentName(workInProgress) || "Unknown"
-        );
+        !(shouldUpdate !== undefined)
+          ? warning(
+              false,
+              "%s.shouldComponentUpdate(): Returned undefined instead of a " +
+                "boolean value. Make sure to return true or false.",
+              getComponentName(workInProgress) || "Component"
+            )
+          : void 0;
       }
 
       return shouldUpdate;
@@ -5975,7 +5590,7 @@ var ReactFiberClassComponent = function(
     var instance = workInProgress.stateNode;
     var type = workInProgress.type;
     {
-      var name = getComponentName(workInProgress);
+      var name = getComponentName(workInProgress) || "Component";
       var renderPresent = instance.render;
 
       if (!renderPresent) {
@@ -6000,47 +5615,57 @@ var ReactFiberClassComponent = function(
         !instance.getInitialState ||
         instance.getInitialState.isReactClassApproved ||
         instance.state;
-      warning(
-        noGetInitialStateOnES6,
-        "getInitialState was defined on %s, a plain JavaScript class. " +
-          "This is only supported for classes created using React.createClass. " +
-          "Did you mean to define a state property instead?",
-        name
-      );
+      !noGetInitialStateOnES6
+        ? warning(
+            false,
+            "getInitialState was defined on %s, a plain JavaScript class. " +
+              "This is only supported for classes created using React.createClass. " +
+              "Did you mean to define a state property instead?",
+            name
+          )
+        : void 0;
       var noGetDefaultPropsOnES6 =
         !instance.getDefaultProps ||
         instance.getDefaultProps.isReactClassApproved;
-      warning(
-        noGetDefaultPropsOnES6,
-        "getDefaultProps was defined on %s, a plain JavaScript class. " +
-          "This is only supported for classes created using React.createClass. " +
-          "Use a static property to define defaultProps instead.",
-        name
-      );
+      !noGetDefaultPropsOnES6
+        ? warning(
+            false,
+            "getDefaultProps was defined on %s, a plain JavaScript class. " +
+              "This is only supported for classes created using React.createClass. " +
+              "Use a static property to define defaultProps instead.",
+            name
+          )
+        : void 0;
       var noInstancePropTypes = !instance.propTypes;
-      warning(
-        noInstancePropTypes,
-        "propTypes was defined as an instance property on %s. Use a static " +
-          "property to define propTypes instead.",
-        name
-      );
+      !noInstancePropTypes
+        ? warning(
+            false,
+            "propTypes was defined as an instance property on %s. Use a static " +
+              "property to define propTypes instead.",
+            name
+          )
+        : void 0;
       var noInstanceContextTypes = !instance.contextTypes;
-      warning(
-        noInstanceContextTypes,
-        "contextTypes was defined as an instance property on %s. Use a static " +
-          "property to define contextTypes instead.",
-        name
-      );
+      !noInstanceContextTypes
+        ? warning(
+            false,
+            "contextTypes was defined as an instance property on %s. Use a static " +
+              "property to define contextTypes instead.",
+            name
+          )
+        : void 0;
       var noComponentShouldUpdate =
         typeof instance.componentShouldUpdate !== "function";
-      warning(
-        noComponentShouldUpdate,
-        "%s has a method called " +
-          "componentShouldUpdate(). Did you mean shouldComponentUpdate()? " +
-          "The name is phrased as a question because the function is " +
-          "expected to return a value.",
-        name
-      );
+      !noComponentShouldUpdate
+        ? warning(
+            false,
+            "%s has a method called " +
+              "componentShouldUpdate(). Did you mean shouldComponentUpdate()? " +
+              "The name is phrased as a question because the function is " +
+              "expected to return a value.",
+            name
+          )
+        : void 0;
       if (
         type.prototype &&
         type.prototype.isPureReactComponent &&
@@ -6056,73 +5681,127 @@ var ReactFiberClassComponent = function(
       }
       var noComponentDidUnmount =
         typeof instance.componentDidUnmount !== "function";
-      warning(
-        noComponentDidUnmount,
-        "%s has a method called " +
-          "componentDidUnmount(). But there is no such lifecycle method. " +
-          "Did you mean componentWillUnmount()?",
-        name
-      );
+      !noComponentDidUnmount
+        ? warning(
+            false,
+            "%s has a method called " +
+              "componentDidUnmount(). But there is no such lifecycle method. " +
+              "Did you mean componentWillUnmount()?",
+            name
+          )
+        : void 0;
       var noComponentDidReceiveProps =
         typeof instance.componentDidReceiveProps !== "function";
-      warning(
-        noComponentDidReceiveProps,
-        "%s has a method called " +
-          "componentDidReceiveProps(). But there is no such lifecycle method. " +
-          "If you meant to update the state in response to changing props, " +
-          "use componentWillReceiveProps(). If you meant to fetch data or " +
-          "run side-effects or mutations after React has updated the UI, use componentDidUpdate().",
-        name
-      );
+      !noComponentDidReceiveProps
+        ? warning(
+            false,
+            "%s has a method called " +
+              "componentDidReceiveProps(). But there is no such lifecycle method. " +
+              "If you meant to update the state in response to changing props, " +
+              "use componentWillReceiveProps(). If you meant to fetch data or " +
+              "run side-effects or mutations after React has updated the UI, use componentDidUpdate().",
+            name
+          )
+        : void 0;
       var noComponentWillRecieveProps =
         typeof instance.componentWillRecieveProps !== "function";
-      warning(
-        noComponentWillRecieveProps,
-        "%s has a method called " +
-          "componentWillRecieveProps(). Did you mean componentWillReceiveProps()?",
-        name
-      );
+      !noComponentWillRecieveProps
+        ? warning(
+            false,
+            "%s has a method called " +
+              "componentWillRecieveProps(). Did you mean componentWillReceiveProps()?",
+            name
+          )
+        : void 0;
       var noUnsafeComponentWillRecieveProps =
         typeof instance.UNSAFE_componentWillRecieveProps !== "function";
-      warning(
-        noUnsafeComponentWillRecieveProps,
-        "%s has a method called " +
-          "UNSAFE_componentWillRecieveProps(). Did you mean UNSAFE_componentWillReceiveProps()?",
-        name
-      );
+      !noUnsafeComponentWillRecieveProps
+        ? warning(
+            false,
+            "%s has a method called " +
+              "UNSAFE_componentWillRecieveProps(). Did you mean UNSAFE_componentWillReceiveProps()?",
+            name
+          )
+        : void 0;
       var hasMutatedProps = instance.props !== workInProgress.pendingProps;
-      warning(
-        instance.props === undefined || !hasMutatedProps,
-        "%s(...): When calling super() in `%s`, make sure to pass " +
-          "up the same props that your component's constructor was passed.",
-        name,
-        name
-      );
+      !(instance.props === undefined || !hasMutatedProps)
+        ? warning(
+            false,
+            "%s(...): When calling super() in `%s`, make sure to pass " +
+              "up the same props that your component's constructor was passed.",
+            name,
+            name
+          )
+        : void 0;
       var noInstanceDefaultProps = !instance.defaultProps;
-      warning(
-        noInstanceDefaultProps,
-        "Setting defaultProps as an instance property on %s is not supported and will be ignored." +
-          " Instead, define defaultProps as a static property on %s.",
-        name,
-        name
-      );
-    }
+      !noInstanceDefaultProps
+        ? warning(
+            false,
+            "Setting defaultProps as an instance property on %s is not supported and will be ignored." +
+              " Instead, define defaultProps as a static property on %s.",
+            name,
+            name
+          )
+        : void 0;
 
-    var state = instance.state;
-    if (state && (typeof state !== "object" || isArray(state))) {
-      warning(
-        false,
-        "%s.state: must be set to an object or null",
-        getComponentName(workInProgress)
-      );
-    }
-    if (typeof instance.getChildContext === "function") {
-      warning(
-        typeof type.childContextTypes === "object",
-        "%s.getChildContext(): childContextTypes must be defined in order to " +
-          "use getChildContext().",
-        getComponentName(workInProgress)
-      );
+      if (
+        typeof instance.getSnapshotBeforeUpdate === "function" &&
+        typeof instance.componentDidUpdate !== "function" &&
+        !didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.has(type)
+      ) {
+        didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.add(type);
+        warning(
+          false,
+          "%s: getSnapshotBeforeUpdate() should be used with componentDidUpdate(). " +
+            "This component defines getSnapshotBeforeUpdate() only.",
+          getComponentName(workInProgress)
+        );
+      }
+
+      var noInstanceGetDerivedStateFromProps =
+        typeof instance.getDerivedStateFromProps !== "function";
+      !noInstanceGetDerivedStateFromProps
+        ? warning(
+            false,
+            "%s: getDerivedStateFromProps() is defined as an instance method " +
+              "and will be ignored. Instead, declare it as a static method.",
+            name
+          )
+        : void 0;
+      var noInstanceGetDerivedStateFromCatch =
+        typeof instance.getDerivedStateFromCatch !== "function";
+      !noInstanceGetDerivedStateFromCatch
+        ? warning(
+            false,
+            "%s: getDerivedStateFromCatch() is defined as an instance method " +
+              "and will be ignored. Instead, declare it as a static method.",
+            name
+          )
+        : void 0;
+      var noStaticGetSnapshotBeforeUpdate =
+        typeof type.getSnapshotBeforeUpdate !== "function";
+      !noStaticGetSnapshotBeforeUpdate
+        ? warning(
+            false,
+            "%s: getSnapshotBeforeUpdate() is defined as a static method " +
+              "and will be ignored. Instead, declare it as an instance method.",
+            name
+          )
+        : void 0;
+      var _state = instance.state;
+      if (_state && (typeof _state !== "object" || isArray(_state))) {
+        warning(false, "%s.state: must be set to an object or null", name);
+      }
+      if (typeof instance.getChildContext === "function") {
+        !(typeof type.childContextTypes === "object")
+          ? warning(
+              false,
+              "%s.getChildContext(): childContextTypes must be defined in order to " +
+                "use getChildContext().",
+              name
+            )
+          : void 0;
+      }
     }
   }
 
@@ -6170,8 +5849,9 @@ var ReactFiberClassComponent = function(
         typeof ctor.getDerivedStateFromProps === "function" &&
         state === null
       ) {
-        var componentName = getComponentName(workInProgress) || "Unknown";
-        if (!didWarnAboutUninitializedState[componentName]) {
+        var componentName = getComponentName(workInProgress) || "Component";
+        if (!didWarnAboutUninitializedState.has(componentName)) {
+          didWarnAboutUninitializedState.add(componentName);
           warning(
             false,
             "%s: Did not properly initialize state during construction. " +
@@ -6179,7 +5859,75 @@ var ReactFiberClassComponent = function(
             componentName,
             instance.state === null ? "null" : "undefined"
           );
-          didWarnAboutUninitializedState[componentName] = true;
+        }
+      }
+
+      // If new component APIs are defined, "unsafe" lifecycles won't be called.
+      // Warn about these lifecycles if they are present.
+      // Don't warn about react-lifecycles-compat polyfilled methods though.
+      if (
+        typeof ctor.getDerivedStateFromProps === "function" ||
+        typeof instance.getSnapshotBeforeUpdate === "function"
+      ) {
+        var foundWillMountName = null;
+        var foundWillReceivePropsName = null;
+        var foundWillUpdateName = null;
+        if (
+          typeof instance.componentWillMount === "function" &&
+          instance.componentWillMount.__suppressDeprecationWarning !== true
+        ) {
+          foundWillMountName = "componentWillMount";
+        } else if (typeof instance.UNSAFE_componentWillMount === "function") {
+          foundWillMountName = "UNSAFE_componentWillMount";
+        }
+        if (
+          typeof instance.componentWillReceiveProps === "function" &&
+          instance.componentWillReceiveProps.__suppressDeprecationWarning !==
+            true
+        ) {
+          foundWillReceivePropsName = "componentWillReceiveProps";
+        } else if (
+          typeof instance.UNSAFE_componentWillReceiveProps === "function"
+        ) {
+          foundWillReceivePropsName = "UNSAFE_componentWillReceiveProps";
+        }
+        if (
+          typeof instance.componentWillUpdate === "function" &&
+          instance.componentWillUpdate.__suppressDeprecationWarning !== true
+        ) {
+          foundWillUpdateName = "componentWillUpdate";
+        } else if (typeof instance.UNSAFE_componentWillUpdate === "function") {
+          foundWillUpdateName = "UNSAFE_componentWillUpdate";
+        }
+        if (
+          foundWillMountName !== null ||
+          foundWillReceivePropsName !== null ||
+          foundWillUpdateName !== null
+        ) {
+          var _componentName = getComponentName(workInProgress) || "Component";
+          var newApiName =
+            typeof ctor.getDerivedStateFromProps === "function"
+              ? "getDerivedStateFromProps()"
+              : "getSnapshotBeforeUpdate()";
+          if (
+            !didWarnAboutLegacyLifecyclesAndDerivedState.has(_componentName)
+          ) {
+            didWarnAboutLegacyLifecyclesAndDerivedState.add(_componentName);
+            warning(
+              false,
+              "Unsafe legacy lifecycles will not be called for components using new component APIs.\n\n" +
+                "%s uses %s but also contains the following legacy lifecycles:%s%s%s\n\n" +
+                "The above lifecycles should be removed. Learn more about this warning here:\n" +
+                "https://fb.me/react-async-component-lifecycle-hooks",
+              _componentName,
+              newApiName,
+              foundWillMountName !== null ? "\n  " + foundWillMountName : "",
+              foundWillReceivePropsName !== null
+                ? "\n  " + foundWillReceivePropsName
+                : "",
+              foundWillUpdateName !== null ? "\n  " + foundWillUpdateName : ""
+            );
+          }
         }
       }
     }
@@ -6189,7 +5937,8 @@ var ReactFiberClassComponent = function(
     var partialState = callGetDerivedStateFromProps(
       workInProgress,
       instance,
-      props
+      props,
+      state
     );
 
     if (partialState !== null && partialState !== undefined) {
@@ -6232,7 +5981,7 @@ var ReactFiberClassComponent = function(
           "%s.componentWillMount(): Assigning directly to this.state is " +
             "deprecated (except inside a component's " +
             "constructor). Use setState instead.",
-          getComponentName(workInProgress)
+          getComponentName(workInProgress) || "Component"
         );
       }
       updater.enqueueReplaceState(instance, instance.state, null);
@@ -6258,7 +6007,8 @@ var ReactFiberClassComponent = function(
     if (instance.state !== oldState) {
       {
         var componentName = getComponentName(workInProgress) || "Component";
-        if (!didWarnAboutStateAssignmentForComponent[componentName]) {
+        if (!didWarnAboutStateAssignmentForComponent.has(componentName)) {
+          didWarnAboutStateAssignmentForComponent.add(componentName);
           warning(
             false,
             "%s.componentWillReceiveProps(): Assigning directly to " +
@@ -6266,69 +6016,47 @@ var ReactFiberClassComponent = function(
               "constructor). Use setState instead.",
             componentName
           );
-          didWarnAboutStateAssignmentForComponent[componentName] = true;
         }
       }
       updater.enqueueReplaceState(instance, instance.state, null);
     }
   }
 
-  function callGetDerivedStateFromProps(workInProgress, instance, props) {
+  function callGetDerivedStateFromProps(
+    workInProgress,
+    instance,
+    nextProps,
+    prevState
+  ) {
     var type = workInProgress.type;
 
     if (typeof type.getDerivedStateFromProps === "function") {
-      {
-        // Don't warn about react-lifecycles-compat polyfilled components
-        if (
-          (typeof instance.componentWillReceiveProps === "function" &&
-            instance.componentWillReceiveProps.__suppressDeprecationWarning !==
-              true) ||
-          typeof instance.UNSAFE_componentWillReceiveProps === "function"
-        ) {
-          var componentName = getComponentName(workInProgress) || "Unknown";
-          if (!didWarnAboutWillReceivePropsAndDerivedState[componentName]) {
-            warning(
-              false,
-              "%s: Defines both componentWillReceiveProps() and static " +
-                "getDerivedStateFromProps() methods. We recommend using " +
-                "only getDerivedStateFromProps().",
-              componentName
-            );
-            didWarnAboutWillReceivePropsAndDerivedState[componentName] = true;
-          }
-        }
-      }
-
       if (
         debugRenderPhaseSideEffects ||
         (debugRenderPhaseSideEffectsForStrictMode &&
           workInProgress.mode & StrictMode)
       ) {
         // Invoke method an extra time to help detect side-effects.
-        type.getDerivedStateFromProps.call(
-          null,
-          props,
-          workInProgress.memoizedState
-        );
+        type.getDerivedStateFromProps.call(null, nextProps, prevState);
       }
 
       var partialState = type.getDerivedStateFromProps.call(
         null,
-        props,
-        workInProgress.memoizedState
+        nextProps,
+        prevState
       );
 
       {
         if (partialState === undefined) {
-          var _componentName = getComponentName(workInProgress) || "Unknown";
-          if (!didWarnAboutUndefinedDerivedState[_componentName]) {
+          var componentName = getComponentName(workInProgress) || "Component";
+          if (!didWarnAboutUndefinedDerivedState.has(componentName)) {
+            didWarnAboutUndefinedDerivedState.add(componentName);
             warning(
               false,
               "%s.getDerivedStateFromProps(): A valid state object (or null) must be returned. " +
                 "You have returned undefined.",
-              _componentName
+              componentName
             );
-            didWarnAboutUndefinedDerivedState[_componentName] = _componentName;
           }
         }
       }
@@ -6372,11 +6100,12 @@ var ReactFiberClassComponent = function(
     }
 
     // In order to support react-lifecycles-compat polyfilled components,
-    // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
+    // Unsafe lifecycles should not be invoked for components using the new APIs.
     if (
+      typeof ctor.getDerivedStateFromProps !== "function" &&
+      typeof instance.getSnapshotBeforeUpdate !== "function" &&
       (typeof instance.UNSAFE_componentWillMount === "function" ||
-        typeof instance.componentWillMount === "function") &&
-      typeof ctor.getDerivedStateFromProps !== "function"
+        typeof instance.componentWillMount === "function")
     ) {
       callComponentWillMount(workInProgress, instance);
       // If we had additional state updates during this life-cycle, let's
@@ -6409,16 +6138,20 @@ var ReactFiberClassComponent = function(
     var newUnmaskedContext = getUnmaskedContext(workInProgress);
     var newContext = getMaskedContext(workInProgress, newUnmaskedContext);
 
+    var hasNewLifecycles =
+      typeof ctor.getDerivedStateFromProps === "function" ||
+      typeof instance.getSnapshotBeforeUpdate === "function";
+
     // Note: During these life-cycles, instance.props/instance.state are what
     // ever the previously attempted to render - not the "current". However,
     // during componentDidUpdate we pass the "current" props.
 
     // In order to support react-lifecycles-compat polyfilled components,
-    // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
+    // Unsafe lifecycles should not be invoked for components using the new APIs.
     if (
+      !hasNewLifecycles &&
       (typeof instance.UNSAFE_componentWillReceiveProps === "function" ||
-        typeof instance.componentWillReceiveProps === "function") &&
-      typeof ctor.getDerivedStateFromProps !== "function"
+        typeof instance.componentWillReceiveProps === "function")
     ) {
       if (oldProps !== newProps || oldContext !== newContext) {
         callComponentWillReceiveProps(
@@ -6428,15 +6161,6 @@ var ReactFiberClassComponent = function(
           newContext
         );
       }
-    }
-
-    var derivedStateFromProps = void 0;
-    if (oldProps !== newProps) {
-      derivedStateFromProps = callGetDerivedStateFromProps(
-        workInProgress,
-        instance,
-        newProps
-      );
     }
 
     // Compute the next state using the memoized state and the update queue.
@@ -6475,6 +6199,18 @@ var ReactFiberClassComponent = function(
       newState = oldState;
     }
 
+    var derivedStateFromProps = void 0;
+    if (oldProps !== newProps) {
+      // The prevState parameter should be the partially updated state.
+      // Otherwise, spreading state in return values could override updates.
+      derivedStateFromProps = callGetDerivedStateFromProps(
+        workInProgress,
+        instance,
+        newProps,
+        newState
+      );
+    }
+
     if (derivedStateFromProps !== null && derivedStateFromProps !== undefined) {
       // Render-phase updates (like this) should not be added to the update queue,
       // So that multiple render passes do not enqueue multiple updates.
@@ -6483,6 +6219,17 @@ var ReactFiberClassComponent = function(
         newState === null || newState === undefined
           ? derivedStateFromProps
           : Object.assign({}, newState, derivedStateFromProps);
+
+      // Update the base state of the update queue.
+      // FIXME: This is getting ridiculous. Refactor plz!
+      var _updateQueue = workInProgress.updateQueue;
+      if (_updateQueue !== null) {
+        _updateQueue.baseState = Object.assign(
+          {},
+          _updateQueue.baseState,
+          derivedStateFromProps
+        );
+      }
     }
     if (derivedStateFromCatch !== null && derivedStateFromCatch !== undefined) {
       // Render-phase updates (like this) should not be added to the update queue,
@@ -6492,6 +6239,17 @@ var ReactFiberClassComponent = function(
         newState === null || newState === undefined
           ? derivedStateFromCatch
           : Object.assign({}, newState, derivedStateFromCatch);
+
+      // Update the base state of the update queue.
+      // FIXME: This is getting ridiculous. Refactor plz!
+      var _updateQueue2 = workInProgress.updateQueue;
+      if (_updateQueue2 !== null) {
+        _updateQueue2.baseState = Object.assign(
+          {},
+          _updateQueue2.baseState,
+          derivedStateFromCatch
+        );
+      }
     }
 
     if (
@@ -6522,11 +6280,11 @@ var ReactFiberClassComponent = function(
 
     if (shouldUpdate) {
       // In order to support react-lifecycles-compat polyfilled components,
-      // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
+      // Unsafe lifecycles should not be invoked for components using the new APIs.
       if (
+        !hasNewLifecycles &&
         (typeof instance.UNSAFE_componentWillMount === "function" ||
-          typeof instance.componentWillMount === "function") &&
-        typeof ctor.getDerivedStateFromProps !== "function"
+          typeof instance.componentWillMount === "function")
       ) {
         startPhaseTimer(workInProgress, "componentWillMount");
         if (typeof instance.componentWillMount === "function") {
@@ -6574,16 +6332,20 @@ var ReactFiberClassComponent = function(
     var newUnmaskedContext = getUnmaskedContext(workInProgress);
     var newContext = getMaskedContext(workInProgress, newUnmaskedContext);
 
+    var hasNewLifecycles =
+      typeof ctor.getDerivedStateFromProps === "function" ||
+      typeof instance.getSnapshotBeforeUpdate === "function";
+
     // Note: During these life-cycles, instance.props/instance.state are what
     // ever the previously attempted to render - not the "current". However,
     // during componentDidUpdate we pass the "current" props.
 
     // In order to support react-lifecycles-compat polyfilled components,
-    // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
+    // Unsafe lifecycles should not be invoked for components using the new APIs.
     if (
+      !hasNewLifecycles &&
       (typeof instance.UNSAFE_componentWillReceiveProps === "function" ||
-        typeof instance.componentWillReceiveProps === "function") &&
-      typeof ctor.getDerivedStateFromProps !== "function"
+        typeof instance.componentWillReceiveProps === "function")
     ) {
       if (oldProps !== newProps || oldContext !== newContext) {
         callComponentWillReceiveProps(
@@ -6595,20 +6357,12 @@ var ReactFiberClassComponent = function(
       }
     }
 
-    var derivedStateFromProps = void 0;
-    if (oldProps !== newProps) {
-      derivedStateFromProps = callGetDerivedStateFromProps(
-        workInProgress,
-        instance,
-        newProps
-      );
-    }
-
     // Compute the next state using the memoized state and the update queue.
     var oldState = workInProgress.memoizedState;
     // TODO: Previous state can be null.
     var newState = void 0;
     var derivedStateFromCatch = void 0;
+
     if (workInProgress.updateQueue !== null) {
       newState = processUpdateQueue(
         current,
@@ -6640,6 +6394,18 @@ var ReactFiberClassComponent = function(
       newState = oldState;
     }
 
+    var derivedStateFromProps = void 0;
+    if (oldProps !== newProps) {
+      // The prevState parameter should be the partially updated state.
+      // Otherwise, spreading state in return values could override updates.
+      derivedStateFromProps = callGetDerivedStateFromProps(
+        workInProgress,
+        instance,
+        newProps,
+        newState
+      );
+    }
+
     if (derivedStateFromProps !== null && derivedStateFromProps !== undefined) {
       // Render-phase updates (like this) should not be added to the update queue,
       // So that multiple render passes do not enqueue multiple updates.
@@ -6648,6 +6414,17 @@ var ReactFiberClassComponent = function(
         newState === null || newState === undefined
           ? derivedStateFromProps
           : Object.assign({}, newState, derivedStateFromProps);
+
+      // Update the base state of the update queue.
+      // FIXME: This is getting ridiculous. Refactor plz!
+      var _updateQueue3 = workInProgress.updateQueue;
+      if (_updateQueue3 !== null) {
+        _updateQueue3.baseState = Object.assign(
+          {},
+          _updateQueue3.baseState,
+          derivedStateFromProps
+        );
+      }
     }
     if (derivedStateFromCatch !== null && derivedStateFromCatch !== undefined) {
       // Render-phase updates (like this) should not be added to the update queue,
@@ -6657,6 +6434,17 @@ var ReactFiberClassComponent = function(
         newState === null || newState === undefined
           ? derivedStateFromCatch
           : Object.assign({}, newState, derivedStateFromCatch);
+
+      // Update the base state of the update queue.
+      // FIXME: This is getting ridiculous. Refactor plz!
+      var _updateQueue4 = workInProgress.updateQueue;
+      if (_updateQueue4 !== null) {
+        _updateQueue4.baseState = Object.assign(
+          {},
+          _updateQueue4.baseState,
+          derivedStateFromCatch
+        );
+      }
     }
 
     if (
@@ -6678,6 +6466,14 @@ var ReactFiberClassComponent = function(
           workInProgress.effectTag |= Update;
         }
       }
+      if (typeof instance.getSnapshotBeforeUpdate === "function") {
+        if (
+          oldProps !== current.memoizedProps ||
+          oldState !== current.memoizedState
+        ) {
+          workInProgress.effectTag |= Snapshot;
+        }
+      }
       return false;
     }
 
@@ -6692,11 +6488,11 @@ var ReactFiberClassComponent = function(
 
     if (shouldUpdate) {
       // In order to support react-lifecycles-compat polyfilled components,
-      // Unsafe lifecycles should not be invoked for any component with the new gDSFP.
+      // Unsafe lifecycles should not be invoked for components using the new APIs.
       if (
+        !hasNewLifecycles &&
         (typeof instance.UNSAFE_componentWillUpdate === "function" ||
-          typeof instance.componentWillUpdate === "function") &&
-        typeof ctor.getDerivedStateFromProps !== "function"
+          typeof instance.componentWillUpdate === "function")
       ) {
         startPhaseTimer(workInProgress, "componentWillUpdate");
         if (typeof instance.componentWillUpdate === "function") {
@@ -6710,6 +6506,9 @@ var ReactFiberClassComponent = function(
       if (typeof instance.componentDidUpdate === "function") {
         workInProgress.effectTag |= Update;
       }
+      if (typeof instance.getSnapshotBeforeUpdate === "function") {
+        workInProgress.effectTag |= Snapshot;
+      }
     } else {
       // If an update was already in progress, we should schedule an Update
       // effect even though we're bailing out, so that cWU/cDU are called.
@@ -6719,6 +6518,14 @@ var ReactFiberClassComponent = function(
           oldState !== current.memoizedState
         ) {
           workInProgress.effectTag |= Update;
+        }
+      }
+      if (typeof instance.getSnapshotBeforeUpdate === "function") {
+        if (
+          oldProps !== current.memoizedProps ||
+          oldState !== current.memoizedState
+        ) {
+          workInProgress.effectTag |= Snapshot;
         }
       }
 
@@ -7560,13 +7367,15 @@ function ChildReconciler(shouldTrackSideEffects) {
       if (typeof newChildrenIterable.entries === "function") {
         var possibleMap = newChildrenIterable;
         if (possibleMap.entries === iteratorFn) {
-          warning(
-            didWarnAboutMaps,
-            "Using Maps as children is unsupported and will likely yield " +
-              "unexpected results. Convert it to a sequence/iterable of keyed " +
-              "ReactElements instead.%s",
-            getCurrentFiberStackAddendum$1()
-          );
+          !didWarnAboutMaps
+            ? warning(
+                false,
+                "Using Maps as children is unsupported and will likely yield " +
+                  "unexpected results. Convert it to a sequence/iterable of keyed " +
+                  "ReactElements instead.%s",
+                getCurrentFiberStackAddendum$1()
+              )
+            : void 0;
           didWarnAboutMaps = true;
         }
       }
@@ -8532,7 +8341,8 @@ var ReactFiberBeginWork = function(
         var partialState = callGetDerivedStateFromProps(
           workInProgress,
           value,
-          props
+          props,
+          workInProgress.memoizedState
         );
 
         if (partialState !== null && partialState !== undefined) {
@@ -8565,11 +8375,13 @@ var ReactFiberBeginWork = function(
         var _Component = workInProgress.type;
 
         if (_Component) {
-          warning(
-            !_Component.childContextTypes,
-            "%s(...): childContextTypes cannot be defined on a functional component.",
-            _Component.displayName || _Component.name || "Component"
-          );
+          !!_Component.childContextTypes
+            ? warning(
+                false,
+                "%s(...): childContextTypes cannot be defined on a functional component.",
+                _Component.displayName || _Component.name || "Component"
+              )
+            : void 0;
         }
         if (workInProgress.ref !== null) {
           var info = "";
@@ -8788,7 +8600,7 @@ var ReactFiberBeginWork = function(
     renderExpirationTime
   ) {
     var providerType = workInProgress.type;
-    var context = providerType.context;
+    var context = providerType._context;
 
     var newProps = workInProgress.pendingProps;
     var oldProps = workInProgress.memoizedProps;
@@ -8841,12 +8653,14 @@ var ReactFiberBeginWork = function(
               ? context._calculateChangedBits(oldValue, newValue)
               : MAX_SIGNED_31_BIT_INT;
           {
-            warning(
-              (changedBits & MAX_SIGNED_31_BIT_INT) === changedBits,
-              "calculateChangedBits: Expected the return value to be a " +
-                "31-bit integer. Instead received: %s",
-              changedBits
-            );
+            !((changedBits & MAX_SIGNED_31_BIT_INT) === changedBits)
+              ? warning(
+                  false,
+                  "calculateChangedBits: Expected the return value to be a " +
+                    "31-bit integer. Instead received: %s",
+                  changedBits
+                )
+              : void 0;
           }
           changedBits |= 0;
 
@@ -8914,21 +8728,27 @@ var ReactFiberBeginWork = function(
         changedBits,
         renderExpirationTime
       );
-    } else if (oldProps !== null && oldProps.children === newProps.children) {
-      // No change. Bailout early if children are the same.
+    } else if (oldProps === newProps) {
+      // Skip over a memoized parent with a bitmask bailout even
+      // if we began working on it because of a deeper matching child.
       return bailoutOnAlreadyFinishedWork(current, workInProgress);
     }
+    // There is no bailout on `children` equality because we expect people
+    // to often pass a bound method as a child, but it may reference
+    // `this.state` or `this.props` (and thus needs to re-render on `setState`).
 
     var render = newProps.children;
 
     {
-      warning(
-        typeof render === "function",
-        "A context consumer was rendered with multiple children, or a child " +
-          "that isn't a function. A context consumer expects a single child " +
-          "that is a function. If you did pass a function, make sure there " +
-          "is no trailing or leading whitespace around it."
-      );
+      !(typeof render === "function")
+        ? warning(
+            false,
+            "A context consumer was rendered with multiple children, or a child " +
+              "that isn't a function. A context consumer expects a single child " +
+              "that is a function. If you did pass a function, make sure there " +
+              "is no trailing or leading whitespace around it."
+          )
+        : void 0;
     }
 
     var newChildren = render(newValue);
@@ -9128,7 +8948,7 @@ var ReactFiberCompleteWork = function(
 
   function markUpdate(workInProgress) {
     // Tag the fiber with an update effect. This turns a Placement into
-    // an UpdateAndPlacement.
+    // a PlacementAndUpdate.
     workInProgress.effectTag |= Update;
   }
 
@@ -9883,6 +9703,11 @@ var invokeGuardedCallback$3 = ReactErrorUtils.invokeGuardedCallback;
 var hasCaughtError$1 = ReactErrorUtils.hasCaughtError;
 var clearCaughtError$1 = ReactErrorUtils.clearCaughtError;
 
+var didWarnAboutUndefinedSnapshotBeforeUpdate = null;
+{
+  didWarnAboutUndefinedSnapshotBeforeUpdate = new Set();
+}
+
 function logError(boundary, errorInfo) {
   var source = errorInfo.source;
   var stack = errorInfo.stack;
@@ -9892,21 +9717,19 @@ function logError(boundary, errorInfo) {
 
   var capturedError = {
     componentName: source !== null ? getComponentName(source) : null,
-    error: errorInfo.value,
-    errorBoundary: boundary,
     componentStack: stack !== null ? stack : "",
+    error: errorInfo.value,
+    errorBoundary: null,
     errorBoundaryName: null,
     errorBoundaryFound: false,
     willRetry: false
   };
 
-  if (boundary !== null) {
+  if (boundary !== null && boundary.tag === ClassComponent) {
+    capturedError.errorBoundary = boundary.stateNode;
     capturedError.errorBoundaryName = getComponentName(boundary);
-    capturedError.errorBoundaryFound = capturedError.willRetry =
-      boundary.tag === ClassComponent;
-  } else {
-    capturedError.errorBoundaryName = null;
-    capturedError.errorBoundaryFound = capturedError.willRetry = false;
+    capturedError.errorBoundaryFound = true;
+    capturedError.willRetry = true;
   }
 
   try {
@@ -9975,6 +9798,58 @@ var ReactFiberCommitWork = function(
     }
   }
 
+  function commitBeforeMutationLifeCycles(current, finishedWork) {
+    switch (finishedWork.tag) {
+      case ClassComponent: {
+        if (finishedWork.effectTag & Snapshot) {
+          if (current !== null) {
+            var prevProps = current.memoizedProps;
+            var prevState = current.memoizedState;
+            startPhaseTimer(finishedWork, "getSnapshotBeforeUpdate");
+            var _instance = finishedWork.stateNode;
+            _instance.props = finishedWork.memoizedProps;
+            _instance.state = finishedWork.memoizedState;
+            var snapshot = _instance.getSnapshotBeforeUpdate(
+              prevProps,
+              prevState
+            );
+            {
+              var didWarnSet = didWarnAboutUndefinedSnapshotBeforeUpdate;
+              if (
+                snapshot === undefined &&
+                !didWarnSet.has(finishedWork.type)
+              ) {
+                didWarnSet.add(finishedWork.type);
+                warning(
+                  false,
+                  "%s.getSnapshotBeforeUpdate(): A snapshot value (or null) " +
+                    "must be returned. You have returned undefined.",
+                  getComponentName(finishedWork)
+                );
+              }
+            }
+            _instance.__reactInternalSnapshotBeforeUpdate = snapshot;
+            stopPhaseTimer();
+          }
+        }
+        return;
+      }
+      case HostRoot:
+      case HostComponent:
+      case HostText:
+      case HostPortal:
+        // Nothing to do for these component types
+        return;
+      default: {
+        invariant(
+          false,
+          "This unit of work tag should not have side-effects. This error is " +
+            "likely caused by a bug in React. Please file an issue."
+        );
+      }
+    }
+  }
+
   function commitLifeCycles(
     finishedRoot,
     current,
@@ -9984,50 +9859,54 @@ var ReactFiberCommitWork = function(
   ) {
     switch (finishedWork.tag) {
       case ClassComponent: {
-        var _instance = finishedWork.stateNode;
+        var _instance2 = finishedWork.stateNode;
         if (finishedWork.effectTag & Update) {
           if (current === null) {
             startPhaseTimer(finishedWork, "componentDidMount");
-            _instance.props = finishedWork.memoizedProps;
-            _instance.state = finishedWork.memoizedState;
-            _instance.componentDidMount();
+            _instance2.props = finishedWork.memoizedProps;
+            _instance2.state = finishedWork.memoizedState;
+            _instance2.componentDidMount();
             stopPhaseTimer();
           } else {
             var prevProps = current.memoizedProps;
             var prevState = current.memoizedState;
             startPhaseTimer(finishedWork, "componentDidUpdate");
-            _instance.props = finishedWork.memoizedProps;
-            _instance.state = finishedWork.memoizedState;
-            _instance.componentDidUpdate(prevProps, prevState);
+            _instance2.props = finishedWork.memoizedProps;
+            _instance2.state = finishedWork.memoizedState;
+            _instance2.componentDidUpdate(
+              prevProps,
+              prevState,
+              _instance2.__reactInternalSnapshotBeforeUpdate
+            );
             stopPhaseTimer();
           }
         }
         var updateQueue = finishedWork.updateQueue;
         if (updateQueue !== null) {
-          commitCallbacks(updateQueue, _instance);
+          commitCallbacks(updateQueue, _instance2);
         }
         return;
       }
       case HostRoot: {
         var _updateQueue = finishedWork.updateQueue;
         if (_updateQueue !== null) {
-          var _instance2 = null;
+          var _instance3 = null;
           if (finishedWork.child !== null) {
             switch (finishedWork.child.tag) {
               case HostComponent:
-                _instance2 = getPublicInstance(finishedWork.child.stateNode);
+                _instance3 = getPublicInstance(finishedWork.child.stateNode);
                 break;
               case ClassComponent:
-                _instance2 = finishedWork.child.stateNode;
+                _instance3 = finishedWork.child.stateNode;
                 break;
             }
           }
-          commitCallbacks(_updateQueue, _instance2);
+          commitCallbacks(_updateQueue, _instance3);
         }
         return;
       }
       case HostComponent: {
-        var _instance3 = finishedWork.stateNode;
+        var _instance4 = finishedWork.stateNode;
 
         // Renderers may schedule work to be done after host components are mounted
         // (eg DOM renderer may schedule auto-focus for inputs and form controls).
@@ -10036,7 +9915,7 @@ var ReactFiberCommitWork = function(
         if (current === null && finishedWork.effectTag & Update) {
           var type = finishedWork.type;
           var props = finishedWork.memoizedProps;
-          commitMount(_instance3, type, props, finishedWork);
+          commitMount(_instance4, type, props, finishedWork);
         }
 
         return;
@@ -10064,7 +9943,7 @@ var ReactFiberCommitWork = function(
       case ClassComponent:
         {
           var ctor = finishedWork.type;
-          var _instance4 = finishedWork.stateNode;
+          var _instance5 = finishedWork.stateNode;
           var updateQueue = finishedWork.updateQueue;
           invariant(
             updateQueue !== null && updateQueue.capturedValues !== null,
@@ -10081,16 +9960,19 @@ var ReactFiberCommitWork = function(
             // This gets reset before we yield back to the browser.
             // TODO: Warn in strict mode if getDerivedStateFromCatch is
             // not defined.
-            markLegacyErrorBoundaryAsFailed(_instance4);
+            markLegacyErrorBoundaryAsFailed(_instance5);
           }
 
-          _instance4.props = finishedWork.memoizedProps;
-          _instance4.state = finishedWork.memoizedState;
+          _instance5.props = finishedWork.memoizedProps;
+          _instance5.state = finishedWork.memoizedState;
           for (var i = 0; i < capturedErrors.length; i++) {
             var errorInfo = capturedErrors[i];
             var _error = errorInfo.value;
+            var stack = errorInfo.stack;
             logError(finishedWork, errorInfo);
-            _instance4.componentDidCatch(_error);
+            _instance5.componentDidCatch(_error, {
+              componentStack: stack !== null ? stack : ""
+            });
           }
         }
         break;
@@ -10123,14 +10005,14 @@ var ReactFiberCommitWork = function(
   function commitAttachRef(finishedWork) {
     var ref = finishedWork.ref;
     if (ref !== null) {
-      var _instance5 = finishedWork.stateNode;
+      var _instance6 = finishedWork.stateNode;
       var instanceToUse = void 0;
       switch (finishedWork.tag) {
         case HostComponent:
-          instanceToUse = getPublicInstance(_instance5);
+          instanceToUse = getPublicInstance(_instance6);
           break;
         default:
-          instanceToUse = _instance5;
+          instanceToUse = _instance6;
       }
       if (typeof ref === "function") {
         ref(instanceToUse);
@@ -10174,9 +10056,9 @@ var ReactFiberCommitWork = function(
     switch (current.tag) {
       case ClassComponent: {
         safelyDetachRef(current);
-        var _instance6 = current.stateNode;
-        if (typeof _instance6.componentWillUnmount === "function") {
-          safelyCallComponentWillUnmount(current, _instance6);
+        var _instance7 = current.stateNode;
+        if (typeof _instance7.componentWillUnmount === "function") {
+          safelyCallComponentWillUnmount(current, _instance7);
         }
         return;
       }
@@ -10313,6 +10195,7 @@ var ReactFiberCommitWork = function(
         },
 
         commitLifeCycles: commitLifeCycles,
+        commitBeforeMutationLifeCycles: commitBeforeMutationLifeCycles,
         commitErrorLogging: commitErrorLogging,
         commitAttachRef: commitAttachRef,
         commitDetachRef: commitDetachRef
@@ -10571,8 +10454,8 @@ var ReactFiberCommitWork = function(
         return;
       }
       case HostComponent: {
-        var _instance7 = finishedWork.stateNode;
-        if (_instance7 != null) {
+        var _instance8 = finishedWork.stateNode;
+        if (_instance8 != null) {
           // Commit the work prepared earlier.
           var newProps = finishedWork.memoizedProps;
           // For hydration we reuse the update path but we treat the oldProps
@@ -10585,7 +10468,7 @@ var ReactFiberCommitWork = function(
           finishedWork.updateQueue = null;
           if (updatePayload !== null) {
             commitUpdate(
-              _instance7,
+              _instance8,
               updatePayload,
               type,
               oldProps,
@@ -10630,6 +10513,7 @@ var ReactFiberCommitWork = function(
 
   if (enableMutatingReconciler) {
     return {
+      commitBeforeMutationLifeCycles: commitBeforeMutationLifeCycles,
       commitResetTextContent: commitResetTextContent,
       commitPlacement: commitPlacement,
       commitDeletion: commitDeletion,
@@ -10675,12 +10559,19 @@ var ReactFiberHostContext = function(config, stack) {
     // Push current root instance onto the stack;
     // This allows us to reset root when portals are popped.
     push(rootInstanceStackCursor, nextRootInstance, fiber);
-
-    var nextRootContext = getRootHostContext(nextRootInstance);
-
     // Track the context and the Fiber that provided it.
     // This enables us to pop only Fibers that provide unique contexts.
     push(contextFiberStackCursor, fiber, fiber);
+
+    // Finally, we need to push the host context to the stack.
+    // However, we can't just call getRootHostContext() and push it because
+    // we'd have a different number of entries on the stack depending on
+    // whether getRootHostContext() throws somewhere in renderer code or not.
+    // So we push an empty value first. This lets us safely unwind on errors.
+    push(contextStackCursor, NO_CONTEXT, fiber);
+    var nextRootContext = getRootHostContext(nextRootInstance);
+    // Now that we know this function doesn't throw, replace it.
+    pop(contextStackCursor, fiber);
     push(contextStackCursor, nextRootContext, fiber);
   }
 
@@ -11391,7 +11282,7 @@ var ReactFiberNewContext = function(stack) {
   }
 
   function pushProvider(providerFiber) {
-    var context = providerFiber.type.context;
+    var context = providerFiber.type._context;
 
     push(changedBitsCursor, context._changedBits, providerFiber);
     push(valueCursor, context._currentValue, providerFiber);
@@ -11401,12 +11292,16 @@ var ReactFiberNewContext = function(stack) {
     context._changedBits = providerFiber.stateNode;
 
     {
-      warning(
+      !(
         context._currentRenderer === null ||
-          context._currentRenderer === rendererSigil,
-        "Detected multiple renderers concurrently rendering the " +
-          "same context provider. This is currently unsupported."
-      );
+        context._currentRenderer === rendererSigil
+      )
+        ? warning(
+            false,
+            "Detected multiple renderers concurrently rendering the " +
+              "same context provider. This is currently unsupported."
+          )
+        : void 0;
       context._currentRenderer = rendererSigil;
     }
   }
@@ -11419,7 +11314,7 @@ var ReactFiberNewContext = function(stack) {
     pop(valueCursor, providerFiber);
     pop(changedBitsCursor, providerFiber);
 
-    var context = providerFiber.type.context;
+    var context = providerFiber.type._context;
     context._currentValue = currentValue;
     context._changedBits = changedBits;
   }
@@ -11532,17 +11427,19 @@ var warnAboutInvalidUpdates = void 0;
   var didWarnStateUpdateForUnmountedComponent = {};
 
   warnAboutUpdateOnUnmounted = function(fiber) {
+    // We show the whole stack but dedupe on the top component's name because
+    // the problematic code almost always lies inside that component.
     var componentName = getComponentName(fiber) || "ReactClass";
     if (didWarnStateUpdateForUnmountedComponent[componentName]) {
       return;
     }
     warning(
       false,
-      "Can only update a mounted or mounting " +
-        "component. This usually means you called setState, replaceState, " +
-        "or forceUpdate on an unmounted component. This is a no-op.\n\nPlease " +
-        "check the code for the %s component.",
-      componentName
+      "Can't call setState (or forceUpdate) on an unmounted component. This " +
+        "is a no-op, but it indicates a memory leak in your application. To " +
+        "fix, cancel all subscriptions and asynchronous tasks in the " +
+        "componentWillUnmount method.%s",
+      getStackAddendumByWorkInProgressFiber(fiber)
     );
     didWarnStateUpdateForUnmountedComponent[componentName] = true;
   };
@@ -11628,6 +11525,8 @@ var ReactFiberScheduler = function(config) {
       markLegacyErrorBoundaryAsFailed,
       recalculateCurrentTime
     ),
+    commitBeforeMutationLifeCycles =
+      _ReactFiberCommitWork.commitBeforeMutationLifeCycles,
     commitResetTextContent = _ReactFiberCommitWork.commitResetTextContent,
     commitPlacement = _ReactFiberCommitWork.commitPlacement,
     commitDeletion = _ReactFiberCommitWork.commitDeletion,
@@ -11679,11 +11578,19 @@ var ReactFiberScheduler = function(config) {
 
   var stashedWorkInProgressProperties = void 0;
   var replayUnitOfWork = void 0;
+  var isReplayingFailedUnitOfWork = void 0;
+  var originalReplayError = void 0;
+  var rethrowOriginalError = void 0;
   if (true && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
     stashedWorkInProgressProperties = null;
-    replayUnitOfWork = function(failedUnitOfWork, isAsync) {
-      // Retore the original state of the work-in-progress
-      Object.assign(failedUnitOfWork, stashedWorkInProgressProperties);
+    isReplayingFailedUnitOfWork = false;
+    originalReplayError = null;
+    replayUnitOfWork = function(failedUnitOfWork, error, isAsync) {
+      // Restore the original state of the work-in-progress
+      assignFiberPropertiesInDEV(
+        failedUnitOfWork,
+        stashedWorkInProgressProperties
+      );
       switch (failedUnitOfWork.tag) {
         case HostRoot:
           popHostContainer(failedUnitOfWork);
@@ -11703,13 +11610,21 @@ var ReactFiberScheduler = function(config) {
           break;
       }
       // Replay the begin phase.
+      isReplayingFailedUnitOfWork = true;
+      originalReplayError = error;
       invokeGuardedCallback$2(null, workLoop, null, isAsync);
+      isReplayingFailedUnitOfWork = false;
+      originalReplayError = null;
       if (hasCaughtError()) {
         clearCaughtError();
       } else {
-        // This should be unreachable because the render phase is
-        // idempotent
+        // If the begin phase did not fail the second time, set this pointer
+        // back to the original value.
+        nextUnitOfWork = failedUnitOfWork;
       }
+    };
+    rethrowOriginalError = function() {
+      throw originalReplayError;
     };
   }
 
@@ -11742,6 +11657,7 @@ var ReactFiberScheduler = function(config) {
       recordEffect();
 
       var effectTag = nextEffect.effectTag;
+
       if (effectTag & ContentReset) {
         commitResetTextContent(nextEffect);
       }
@@ -11796,6 +11712,22 @@ var ReactFiberScheduler = function(config) {
 
     {
       ReactDebugCurrentFiber.resetCurrentFiber();
+    }
+  }
+
+  function commitBeforeMutationLifecycles() {
+    while (nextEffect !== null) {
+      var effectTag = nextEffect.effectTag;
+
+      if (effectTag & Snapshot) {
+        recordEffect();
+        var current = nextEffect.alternate;
+        commitBeforeMutationLifeCycles(current, nextEffect);
+      }
+
+      // Don't cleanup effects yet;
+      // This will be done by commitAllLifeCycles()
+      nextEffect = nextEffect.nextEffect;
     }
   }
 
@@ -11906,16 +11838,14 @@ var ReactFiberScheduler = function(config) {
 
     prepareForCommit(root.containerInfo);
 
-    // Commit all the side-effects within a tree. We'll do this in two passes.
-    // The first pass performs all the host insertions, updates, deletions and
-    // ref unmounts.
+    // Invoke instances of getSnapshotBeforeUpdate before mutation.
     nextEffect = firstEffect;
-    startCommitHostEffectsTimer();
+    startCommitSnapshotEffectsTimer();
     while (nextEffect !== null) {
       var didError = false;
       var error = void 0;
       {
-        invokeGuardedCallback$2(null, commitAllHostEffects, null);
+        invokeGuardedCallback$2(null, commitBeforeMutationLifecycles, null);
         if (hasCaughtError()) {
           didError = true;
           error = clearCaughtError();
@@ -11928,6 +11858,36 @@ var ReactFiberScheduler = function(config) {
             "in React. Please file an issue."
         );
         onCommitPhaseError(nextEffect, error);
+        // Clean-up
+        if (nextEffect !== null) {
+          nextEffect = nextEffect.nextEffect;
+        }
+      }
+    }
+    stopCommitSnapshotEffectsTimer();
+
+    // Commit all the side-effects within a tree. We'll do this in two passes.
+    // The first pass performs all the host insertions, updates, deletions and
+    // ref unmounts.
+    nextEffect = firstEffect;
+    startCommitHostEffectsTimer();
+    while (nextEffect !== null) {
+      var _didError = false;
+      var _error = void 0;
+      {
+        invokeGuardedCallback$2(null, commitAllHostEffects, null);
+        if (hasCaughtError()) {
+          _didError = true;
+          _error = clearCaughtError();
+        }
+      }
+      if (_didError) {
+        invariant(
+          nextEffect !== null,
+          "Should have next effect. This error is likely caused by a bug " +
+            "in React. Please file an issue."
+        );
+        onCommitPhaseError(nextEffect, _error);
         // Clean-up
         if (nextEffect !== null) {
           nextEffect = nextEffect.nextEffect;
@@ -11951,8 +11911,8 @@ var ReactFiberScheduler = function(config) {
     nextEffect = firstEffect;
     startCommitLifeCyclesTimer();
     while (nextEffect !== null) {
-      var _didError = false;
-      var _error = void 0;
+      var _didError2 = false;
+      var _error2 = void 0;
       {
         invokeGuardedCallback$2(
           null,
@@ -11963,17 +11923,17 @@ var ReactFiberScheduler = function(config) {
           committedExpirationTime
         );
         if (hasCaughtError()) {
-          _didError = true;
-          _error = clearCaughtError();
+          _didError2 = true;
+          _error2 = clearCaughtError();
         }
       }
-      if (_didError) {
+      if (_didError2) {
         invariant(
           nextEffect !== null,
           "Should have next effect. This error is likely caused by a bug " +
             "in React. Please file an issue."
         );
-        onCommitPhaseError(nextEffect, _error);
+        onCommitPhaseError(nextEffect, _error2);
         if (nextEffect !== null) {
           nextEffect = nextEffect.nextEffect;
         }
@@ -12197,12 +12157,21 @@ var ReactFiberScheduler = function(config) {
     }
 
     if (true && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
-      stashedWorkInProgressProperties = Object.assign({}, workInProgress);
+      stashedWorkInProgressProperties = assignFiberPropertiesInDEV(
+        stashedWorkInProgressProperties,
+        workInProgress
+      );
     }
     var next = beginWork(current, workInProgress, nextRenderExpirationTime);
-
     {
       ReactDebugCurrentFiber.resetCurrentFiber();
+      if (isReplayingFailedUnitOfWork) {
+        // Currently replaying a failed unit of work. This should be unreachable,
+        // because the render phase is meant to be idempotent, and it should
+        // have thrown again. Since it didn't, rethrow the original error, so
+        // React's internal stack is not misaligned.
+        rethrowOriginalError();
+      }
     }
     if (true && ReactFiberInstrumentation_1.debugTool) {
       ReactFiberInstrumentation_1.debugTool.onBeginWork(workInProgress);
@@ -12276,13 +12245,18 @@ var ReactFiberScheduler = function(config) {
 
         if (true && replayFailedUnitOfWorkWithInvokeGuardedCallback) {
           var failedUnitOfWork = nextUnitOfWork;
-          replayUnitOfWork(failedUnitOfWork, isAsync);
+          replayUnitOfWork(failedUnitOfWork, thrownValue, isAsync);
         }
 
         var sourceFiber = nextUnitOfWork;
         var returnFiber = sourceFiber["return"];
         if (returnFiber === null) {
-          // This is a fatal error.
+          // This is the root. The root could capture its own errors. However,
+          // we don't know if it errors before or after we pushed the host
+          // context. This information is needed to avoid a stack mismatch.
+          // Because we're not sure, treat this as a fatal error. We could track
+          // which phase it fails in, but doesn't seem worth it. At least
+          // for now.
           didFatal = true;
           onUncaughtError(thrownValue);
           break;
@@ -12294,12 +12268,13 @@ var ReactFiberScheduler = function(config) {
     } while (true);
 
     // We're done performing work. Time to clean up.
-    stopWorkLoopTimer(interruptedBy);
-    interruptedBy = null;
+    var didCompleteRoot = false;
     isWorking = false;
 
     // Yield back to main thread.
     if (didFatal) {
+      stopWorkLoopTimer(interruptedBy, didCompleteRoot);
+      interruptedBy = null;
       // There was a fatal error.
       {
         stack.resetStackAfterFatalErrorInDev();
@@ -12308,12 +12283,17 @@ var ReactFiberScheduler = function(config) {
     } else if (nextUnitOfWork === null) {
       // We reached the root.
       if (isRootReadyForCommit) {
+        didCompleteRoot = true;
+        stopWorkLoopTimer(interruptedBy, didCompleteRoot);
+        interruptedBy = null;
         // The root successfully completed. It's ready for commit.
         root.pendingCommitExpirationTime = expirationTime;
         var finishedWork = root.current.alternate;
         return finishedWork;
       } else {
         // The root did not complete.
+        stopWorkLoopTimer(interruptedBy, didCompleteRoot);
+        interruptedBy = null;
         invariant(
           false,
           "Expired work should have completed. This error is likely caused " +
@@ -12321,6 +12301,8 @@ var ReactFiberScheduler = function(config) {
         );
       }
     } else {
+      stopWorkLoopTimer(interruptedBy, didCompleteRoot);
+      interruptedBy = null;
       // There's more work to do, but we ran out of time. Yield back to
       // the renderer.
       return null;
@@ -12506,7 +12488,15 @@ var ReactFiberScheduler = function(config) {
             interruptedBy = fiber;
             resetStack();
           }
-          if (nextRoot !== root || !isWorking) {
+          if (
+            // If we're in the render phase, we don't need to schedule this root
+            // for an update, because we'll do it before we exit...
+            !isWorking ||
+            isCommitting ||
+            // ...unless this is a different root than the one we're rendering.
+            nextRoot !== root
+          ) {
+            // Add this root to the root schedule.
             requestWork(root, expirationTime);
           }
           if (nestedUpdateCount > NESTED_UPDATE_LIMIT) {
@@ -12766,7 +12756,8 @@ var ReactFiberScheduler = function(config) {
 
     if (enableUserTimingAPI && deadline !== null) {
       var didExpire = nextFlushedExpirationTime < recalculateCurrentTime();
-      stopRequestCallbackTimer(didExpire);
+      var timeout = expirationTimeToMs(nextFlushedExpirationTime);
+      stopRequestCallbackTimer(didExpire, timeout);
     }
 
     if (isAsync) {
@@ -12826,7 +12817,11 @@ var ReactFiberScheduler = function(config) {
     // Perform work on root as if the given expiration time is the current time.
     // This has the effect of synchronously flushing all work up to and
     // including the given time.
+    nextFlushedRoot = root;
+    nextFlushedExpirationTime = expirationTime;
     performWorkOnRoot(root, expirationTime, false);
+    // Flush any sync work that was scheduled by lifecycles
+    performSyncWork();
     finishRendering();
   }
 
@@ -13119,7 +13114,7 @@ var ReactFiberReconciler$1 = function(config) {
       return emptyObject;
     }
 
-    var fiber = get(parentComponent);
+    var fiber = get$1(parentComponent);
     var parentContext = findCurrentUnmaskedContext(fiber);
     return isContextProvider(fiber)
       ? processChildContext(fiber, parentContext)
@@ -13153,12 +13148,14 @@ var ReactFiberReconciler$1 = function(config) {
 
     callback = callback === undefined ? null : callback;
     {
-      warning(
-        callback === null || typeof callback === "function",
-        "render(...): Expected the last optional `callback` argument to be a " +
-          "function. Instead received: %s.",
-        callback
-      );
+      !(callback === null || typeof callback === "function")
+        ? warning(
+            false,
+            "render(...): Expected the last optional `callback` argument to be a " +
+              "function. Instead received: %s.",
+            callback
+          )
+        : void 0;
     }
 
     var update = {
@@ -13215,7 +13212,19 @@ var ReactFiberReconciler$1 = function(config) {
     );
   }
 
-  function findHostInstance(fiber) {
+  function findHostInstance(component) {
+    var fiber = get$1(component);
+    if (fiber === undefined) {
+      if (typeof component.render === "function") {
+        invariant(false, "Unable to find node on an unmounted component.");
+      } else {
+        invariant(
+          false,
+          "Argument appears to not be a ReactComponent. Keys: %s",
+          Object.keys(component)
+        );
+      }
+    }
     var hostFiber = findCurrentHostFiber(fiber);
     if (hostFiber === null) {
       return null;
@@ -13308,7 +13317,11 @@ var ReactFiberReconciler$1 = function(config) {
       return injectInternals(
         Object.assign({}, devToolsConfig, {
           findHostInstanceByFiber: function(fiber) {
-            return findHostInstance(fiber);
+            var hostFiber = findCurrentHostFiber(fiber);
+            if (hostFiber === null) {
+              return null;
+            }
+            return hostFiber.stateNode;
           },
           findFiberByHostInstance: function(instance) {
             if (!findFiberByHostInstance) {
@@ -13338,62 +13351,26 @@ var reactReconciler = ReactFiberReconciler$3["default"]
   ? ReactFiberReconciler$3["default"]
   : ReactFiberReconciler$3;
 
-/**
- * Keeps track of allocating and associating native "tags" which are numeric,
- * unique view IDs. All the native tags are negative numbers, to avoid
- * collisions, but in the JS we keep track of them as positive integers to store
- * them effectively in Arrays. So we must refer to them as "inverses" of the
- * native tags (that are * normally negative).
- *
- * It *must* be the case that every `rootNodeID` always maps to the exact same
- * `tag` forever. The easiest way to accomplish this is to never delete
- * anything from this table.
- * Why: Because `dangerouslyReplaceNodeWithMarkupByID` relies on being able to
- * unmount a component with a `rootNodeID`, then mount a new one in its place,
- */
-var INITIAL_TAG_COUNT = 1;
-var ReactNativeTagHandles = {
-  tagsStartAt: INITIAL_TAG_COUNT,
-  tagCount: INITIAL_TAG_COUNT,
-
-  allocateTag: function() {
-    // Skip over root IDs as those are reserved for native
-    while (this.reactTagIsNativeTopRootID(ReactNativeTagHandles.tagCount)) {
-      ReactNativeTagHandles.tagCount++;
-    }
-    var tag = ReactNativeTagHandles.tagCount;
-    ReactNativeTagHandles.tagCount++;
-    return tag;
-  },
-
-  assertRootTag: function(tag) {
-    invariant(
-      this.reactTagIsNativeTopRootID(tag),
-      "Expect a native root tag, instead got %s",
-      tag
-    );
-  },
-
-  reactTagIsNativeTopRootID: function(reactTag) {
-    // We reserve all tags that are 1 mod 10 for native root views
-    return reactTag % 10 === 1;
-  }
-};
-
-function _classCallCheck$2(instance, Constructor) {
+function _classCallCheck$1(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
 
 // Modules provided by RN:
+// Counter for uniquely identifying views.
+// % 10 === 1 means it is a rootTag.
+// % 2 === 0 means it is a Fabric tag.
+// This means that they never overlap.
+var nextReactTag = 2;
+
 /**
  * This is used for refs on host components.
  */
 
 var ReactFabricHostComponent = (function() {
   function ReactFabricHostComponent(tag, viewConfig, props) {
-    _classCallCheck$2(this, ReactFabricHostComponent);
+    _classCallCheck$1(this, ReactFabricHostComponent);
 
     this._nativeTag = tag;
     this.viewConfig = viewConfig;
@@ -13469,8 +13446,10 @@ var ReactFabricRenderer = reactReconciler({
     hostContext,
     internalInstanceHandle
   ) {
-    var tag = ReactNativeTagHandles.allocateTag();
-    var viewConfig = get$1(type);
+    var tag = nextReactTag;
+    nextReactTag += 2;
+
+    var viewConfig = ReactNativeViewConfigRegistry.get(type);
 
     {
       for (var key in viewConfig.validAttributes) {
@@ -13503,7 +13482,8 @@ var ReactFabricRenderer = reactReconciler({
     hostContext,
     internalInstanceHandle
   ) {
-    var tag = ReactNativeTagHandles.allocateTag();
+    var tag = nextReactTag;
+    nextReactTag += 2;
 
     var node = FabricUIManager.createNode(
       tag, // reactTag
@@ -13723,56 +13703,59 @@ var getInspectorDataForViewTag = void 0;
   };
 }
 
-/**
- * Creates a renderable ReactNative host component.
- * Use this method for view configs that are loaded from UIManager.
- * Use createReactNativeComponentClass() for view configs defined within JavaScript.
- *
- * @param {string} config iOS View configuration.
- * @private
- */
-var createReactNativeComponentClass = function(name, callback) {
-  return register(name, callback);
-};
+var findHostInstance = ReactFabricRenderer.findHostInstance;
 
-// Module provided by RN:
-/**
- * Capture an image of the screen, window or an individual view. The image
- * will be stored in a temporary file that will only exist for as long as the
- * app is running.
- *
- * The `view` argument can be the literal string `window` if you want to
- * capture the entire window, or it can be a reference to a specific
- * React Native component.
- *
- * The `options` argument may include:
- * - width/height (number) - the width and height of the image to capture.
- * - format (string) - either 'png' or 'jpeg'. Defaults to 'png'.
- * - quality (number) - the quality when using jpeg. 0.0 - 1.0 (default).
- *
- * Returns a Promise.
- * @platform ios
- */
-function takeSnapshot(view, options) {
-  if (typeof view !== "number" && view !== "window") {
-    view = findNumericNodeHandleFiber(view) || "window";
+function findNodeHandle(componentOrHandle) {
+  {
+    var owner = ReactCurrentOwner.current;
+    if (owner !== null && owner.stateNode !== null) {
+      !owner.stateNode._warnedAboutRefsInRender
+        ? warning(
+            false,
+            "%s is accessing findNodeHandle inside its render(). " +
+              "render() should be a pure function of props and state. It should " +
+              "never access something that requires stale data from the previous " +
+              "render, such as refs. Move this logic to componentDidMount and " +
+              "componentDidUpdate instead.",
+            getComponentName(owner) || "A component"
+          )
+        : void 0;
+
+      owner.stateNode._warnedAboutRefsInRender = true;
+    }
   }
-
-  // Call the hidden '__takeSnapshot' method; the main one throws an error to
-  // prevent accidental backwards-incompatible usage.
-  return UIManager.__takeSnapshot(view, options);
+  if (componentOrHandle == null) {
+    return null;
+  }
+  if (typeof componentOrHandle === "number") {
+    // Already a node handle
+    return componentOrHandle;
+  }
+  if (componentOrHandle._nativeTag) {
+    return componentOrHandle._nativeTag;
+  }
+  if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag) {
+    return componentOrHandle.canonical._nativeTag;
+  }
+  var hostInstance = findHostInstance(componentOrHandle);
+  if (hostInstance == null) {
+    return hostInstance;
+  }
+  if (hostInstance.canonical) {
+    // Fabric
+    return hostInstance.canonical._nativeTag;
+  }
+  return hostInstance._nativeTag;
 }
-
-injectFindHostInstanceFabric(ReactFabricRenderer.findHostInstance);
 
 injection$2.injectRenderer(ReactFabricRenderer);
 
 var roots = new Map();
 
 var ReactFabric = {
-  NativeComponent: ReactNativeComponent,
+  NativeComponent: ReactNativeComponent(findNodeHandle, findHostInstance),
 
-  findNodeHandle: findNumericNodeHandleFiber,
+  findNodeHandle: findNodeHandle,
 
   render: function(element, containerTag, callback) {
     var root = roots.get(containerTag);
@@ -13796,9 +13779,6 @@ var ReactFabric = {
       });
     }
   },
-  unmountComponentAtNodeAndRemoveContainer: function(containerTag) {
-    ReactFabric.unmountComponentAtNode(containerTag);
-  },
   createPortal: function(children, containerTag) {
     var key =
       arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -13806,20 +13786,11 @@ var ReactFabric = {
     return createPortal(children, containerTag, null, key);
   },
 
-  unstable_batchedUpdates: batchedUpdates,
-
-  flushSync: ReactFabricRenderer.flushSync,
-
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: {
     // Used as a mixin in many createClass-based components
-    NativeMethodsMixin: NativeMethodsMixin,
+    NativeMethodsMixin: NativeMethodsMixin(findNodeHandle, findHostInstance),
     // Used by react-native-github/Libraries/ components
-    ReactNativeBridgeEventPlugin: ReactNativeBridgeEventPlugin, // requireNativeComponent
-    ReactNativeComponentTree: ReactNativeComponentTree, // ScrollResponder
-    ReactNativePropRegistry: ReactNativePropRegistry, // flattenStyle, Stylesheet
-    TouchHistoryMath: TouchHistoryMath, // PanResponder
-    createReactNativeComponentClass: createReactNativeComponentClass, // RCTText, RCTView, ReactNativeART
-    takeSnapshot: takeSnapshot
+    ReactNativeComponentTree: ReactNativeComponentTree
   }
 };
 
