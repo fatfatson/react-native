@@ -112,6 +112,7 @@ public class ReactViewGroup extends ViewGroup implements
   public ReactViewGroup(Context context) {
     super(context);
     mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
+    this.setFocusableInTouchMode(true);
   }
 
   @Override
@@ -197,6 +198,7 @@ public class ReactViewGroup extends ViewGroup implements
     if (mPointerEvents == PointerEvents.NONE || mPointerEvents == PointerEvents.BOX_NONE) {
       return false;
     }
+    this.requestFocus();
     // The root view always assumes any view that was tapped wants the touch
     // and sends the event to JS as such.
     // We don't need to do bubbling in native (it's already happening in JS).
