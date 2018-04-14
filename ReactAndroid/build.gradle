@@ -23,12 +23,15 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.3
 //   - jsc-headers
-def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
+def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")?:gradle.ext.REACT_NATIVE_DEPENDENCIES
+println "dependenciesPath:"+dependenciesPath
+
 
 // The Boost library is a very large download (>100MB).
 // If Boost is already present on your system, define the REACT_NATIVE_BOOST_PATH env variable
 // and the build will use that.
 def boostPath = dependenciesPath ?: System.getenv("REACT_NATIVE_BOOST_PATH")
+
 
 task createNativeDepsDirectories {
     downloadsDir.mkdirs()
@@ -216,7 +219,7 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             'NDK_OUT=' + temporaryDir,
             "NDK_LIBS_OUT=$buildDir/react-ndk/all",
-            "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
+            "THIRD_PARTY_NDK_DIR="+dependenciesPath?:"$buildDir/third-party-ndk",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             '-C', file('src/main/jni/react/jni').absolutePath,
             '--jobs', project.hasProperty("jobs") ? project.property("jobs") : Runtime.runtime.availableProcessors()
