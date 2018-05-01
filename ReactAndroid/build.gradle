@@ -219,7 +219,7 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             'NDK_OUT=' + temporaryDir,
             "NDK_LIBS_OUT=$buildDir/react-ndk/all",
-            "THIRD_PARTY_NDK_DIR="+dependenciesPath?:"$buildDir/third-party-ndk",
+            "THIRD_PARTY_NDK_DIR="+(dependenciesPath?:"$buildDir/third-party-ndk"),
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             '-C', file('src/main/jni/react/jni').absolutePath,
             '--jobs', project.hasProperty("jobs") ? project.property("jobs") : Runtime.runtime.availableProcessors()
@@ -250,6 +250,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
 
+    println buildToolsVersion
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 22
