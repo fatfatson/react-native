@@ -20,6 +20,8 @@
 #import "RCTInsertMountItem.h"
 #import "RCTRemoveMountItem.h"
 #import "RCTUpdatePropsMountItem.h"
+#import "RCTUpdateEventHandlersMountItem.h"
+#import "RCTUpdateLocalDataMountItem.h"
 #import "RCTUpdateLayoutMetricsMountItem.h"
 
 using namespace facebook::react;
@@ -52,6 +54,7 @@ using namespace facebook::react;
         [mountItems addObject:mountItem];
         break;
       }
+
       case TreeMutationInstruction::Deletion: {
         NSString *componentName = [NSString stringWithCString:instruction.getOldChildNode()->getComponentName().c_str()
                                                      encoding:NSASCIIStringEncoding];
@@ -63,16 +66,21 @@ using namespace facebook::react;
       }
 
       case TreeMutationInstruction::Insertion: {
-        RCTInsertMountItem *mountItem =
-          [[RCTInsertMountItem alloc] initWithChildTag:instruction.getNewChildNode()->getTag()
-                                             parentTag:instruction.getParentNode()->getTag()
-                                                 index:instruction.getIndex()];
-        [mountItems addObject:mountItem];
-
         // Props
         [mountItems addObject:[[RCTUpdatePropsMountItem alloc] initWithTag:instruction.getNewChildNode()->getTag()
                                                                   oldProps:nullptr
                                                                   newProps:instruction.getNewChildNode()->getProps()]];
+
+        // EventHandlers
+        [mountItems addObject:[[RCTUpdateEventHandlersMountItem alloc] initWithTag:instruction.getNewChildNode()->getTag()
+                                                                     eventHandlers:instruction.getNewChildNode()->getEventHandlers()]];
+
+        // LocalData
+        if (instruction.getNewChildNode()->getLocalData()) {
+          [mountItems addObject:[[RCTUpdateLocalDataMountItem alloc] initWithTag:instruction.getNewChildNode()->getTag()
+                                                                    oldLocalData:nullptr
+                                                                    newLocalData:instruction.getNewChildNode()->getLocalData()]];
+        }
 
         // Layout
         SharedLayoutableShadowNode layoutableNewShadowNode =
@@ -83,6 +91,14 @@ using namespace facebook::react;
                                                                     oldLayoutMetrics:{}
                                                                     newLayoutMetrics:layoutableNewShadowNode->getLayoutMetrics()]];
         }
+
+        // Insertion
+        RCTInsertMountItem *mountItem =
+        [[RCTInsertMountItem alloc] initWithChildTag:instruction.getNewChildNode()->getTag()
+                                           parentTag:instruction.getParentNode()->getTag()
+                                               index:instruction.getIndex()];
+        [mountItems addObject:mountItem];
+
         break;
       }
 
@@ -105,6 +121,23 @@ using namespace facebook::react;
             [[RCTUpdatePropsMountItem alloc] initWithTag:instruction.getOldChildNode()->getTag()
                                                 oldProps:instruction.getOldChildNode()->getProps()
                                                 newProps:instruction.getNewChildNode()->getProps()];
+          [mountItems addObject:mountItem];
+        }
+
+        // EventHandlers
+        if (oldShadowNode->getEventHandlers() != newShadowNode->getEventHandlers()) {
+          RCTUpdateEventHandlersMountItem *mountItem =
+            [[RCTUpdateEventHandlersMountItem alloc] initWithTag:instruction.getOldChildNode()->getTag()
+                                                   eventHandlers:instruction.getOldChildNode()->getEventHandlers()];
+          [mountItems addObject:mountItem];
+        }
+
+        // LocalData
+        if (oldShadowNode->getLocalData() != newShadowNode->getLocalData()) {
+          RCTUpdateLocalDataMountItem *mountItem =
+            [[RCTUpdateLocalDataMountItem alloc] initWithTag:newShadowNode->getTag()
+                                                oldLocalData:oldShadowNode->getLocalData()
+                                                newLocalData:newShadowNode->getLocalData()];
           [mountItems addObject:mountItem];
         }
 

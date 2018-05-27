@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <fabric/core/EventHandlers.h>
+#import <fabric/core/LocalData.h>
 #import <fabric/core/Props.h>
 #import <fabric/core/LayoutMetrics.h>
 #import <React/RCTPrimitives.h>
@@ -43,6 +45,20 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)updateProps:(facebook::react::SharedProps)props
            oldProps:(facebook::react::SharedProps)oldProps;
+
+/*
+ * Called for updating component's local data.
+ * Receiver must update native view props accordingly changed local data.
+ */
+- (void)updateLocalData:(facebook::react::SharedLocalData)localData
+           oldLocalData:(facebook::react::SharedLocalData)oldLocalData;
+
+/*
+ * Called for updating component's event handlers set.
+ * Receiver must cache `eventHandlers` object inside and use it for emitting
+ * events when needed.
+ */
+- (void)updateEventHandlers:(facebook::react::SharedEventHandlers)eventHandlers;
 
 /*
  * Called for updating component's layout metrics.

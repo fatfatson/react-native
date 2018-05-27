@@ -67,3 +67,7 @@ package-lock.json
 /coverage
 /third-party
 /.vscode
+
+# ReactCommon subdir shouldn't have Xcode project
+/ReactCommon/**/*.xcodeproj
+

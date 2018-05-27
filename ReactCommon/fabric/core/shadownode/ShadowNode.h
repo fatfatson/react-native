@@ -8,11 +8,14 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include <vector>
 
+#include <fabric/core/EventHandlers.h>
+#include <fabric/core/LocalData.h>
 #include <fabric/core/Props.h>
-#include <fabric/core/Sealable.h>
 #include <fabric/core/ReactPrimitives.h>
+#include <fabric/core/Sealable.h>
 #include <fabric/debug/DebugStringConvertible.h>
 
 namespace facebook {
@@ -21,32 +24,51 @@ namespace react {
 class ShadowNode;
 
 using SharedShadowNode = std::shared_ptr<const ShadowNode>;
+using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
 using SharedShadowNodeList = std::vector<std::shared_ptr<const ShadowNode>>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 
+using ShadowNodeCloneFunction = std::function<SharedShadowNode(
+  const SharedShadowNode &shadowNode,
+  const SharedProps &props,
+  const SharedEventHandlers &eventHandlers,
+  const SharedShadowNodeSharedList &children
+)>;
+
 class ShadowNode:
   public virtual Sealable,
-  public virtual DebugStringConvertible {
+  public virtual DebugStringConvertible,
+  public std::enable_shared_from_this<ShadowNode> {
 public:
   static SharedShadowNodeSharedList emptySharedShadowNodeSharedList();
 
 #pragma mark - Constructors
 
   ShadowNode(
-    Tag tag,
-    Tag rootTag,
-    InstanceHandle instanceHandle,
-    SharedProps props = SharedProps(),
-    SharedShadowNodeSharedList children = SharedShadowNodeSharedList()
+    const Tag &tag,
+    const Tag &rootTag,
+    const SharedProps &props,
+    const SharedEventHandlers &eventHandlers,
+    const SharedShadowNodeSharedList &children,
+    const ShadowNodeCloneFunction &cloneFunction
   );
 
   ShadowNode(
-    SharedShadowNode shadowNode,
-    SharedProps props = nullptr,
-    SharedShadowNodeSharedList children = nullptr
+    const SharedShadowNode &shadowNode,
+    const SharedProps &props,
+    const SharedEventHandlers &eventHandlers,
+    const SharedShadowNodeSharedList &children
   );
+
+  /*
+   * Clones the shadow node using stored `cloneFunction`.
+   */
+  SharedShadowNode clone(
+    const SharedProps &props = nullptr,
+    const SharedShadowNodeSharedList &children = nullptr
+  ) const;
 
 #pragma mark - Getters
 
@@ -55,9 +77,9 @@ public:
 
   SharedShadowNodeSharedList getChildren() const;
   SharedProps getProps() const;
+  SharedEventHandlers getEventHandlers() const;
   Tag getTag() const;
   Tag getRootTag() const;
-  InstanceHandle getInstanceHandle() const;
 
   /*
    * Returns the node which was used as a prototype in clone constructor.
@@ -66,6 +88,14 @@ public:
    * constructor or the node was already deallocated.
    */
   SharedShadowNode getSourceNode() const;
+
+  /*
+   * Returns a local data associated with the node.
+   * `LocalData` object might be used for data exchange between native view and
+   * shadow node instances.
+   * Concrete type of the object depends on concrete type of the `ShadowNode`.
+   */
+  SharedLocalData getLocalData() const;
 
   void sealRecursive() const;
 
@@ -76,10 +106,17 @@ public:
   void clearSourceNode();
 
   /*
+   * Sets local data assosiated with the node.
+   * The node must be unsealed at this point.
+   */
+  void setLocalData(const SharedLocalData &localData);
+
+  /*
    * Replaces the current source node with its source node.
    * This method might be used for illuminating side-effects caused by the last
    * cloning operation which are not desirable from the diffing algorithm
    * perspective.
+   * The node must be unsealed at this point.
    */
   void shallowSourceNode();
 
@@ -105,12 +142,19 @@ public:
 protected:
   Tag tag_;
   Tag rootTag_;
-  InstanceHandle instanceHandle_;
   SharedProps props_;
+  SharedEventHandlers eventHandlers_;
   SharedShadowNodeSharedList children_;
   WeakShadowNode sourceNode_;
+  SharedLocalData localData_;
 
 private:
+
+  /*
+   * A reference to a cloning function that understands how to clone
+   * the specific type of ShadowNode.
+   */
+  ShadowNodeCloneFunction cloneFunction_;
 
   /*
    * A number of the generation of the ShadowNode instance;
