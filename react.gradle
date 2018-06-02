@@ -123,6 +123,7 @@ afterEvaluate {
                 }
             }
 
+            println "bundle command:"+currentBundleTask.commandLine
             // Hook bundle${productFlavor}${buildType}JsAndAssets into the android build process
             currentBundleTask.dependsOn("merge${targetName}Resources")
             currentBundleTask.dependsOn("merge${targetName}Assets")
